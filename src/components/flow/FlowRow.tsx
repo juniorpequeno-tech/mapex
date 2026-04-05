@@ -47,11 +47,16 @@ export function FlowRowComponent({
             {i > 0 && (
               <ChevronRight className="h-3 w-3 text-muted-foreground/40 shrink-0 mx-0.5" />
             )}
-            <div className="flex-1 min-w-[180px] px-1 border-r border-border/50">
+            <div
+              className="flex-1 min-w-[180px] px-1 border-r border-border/50"
+              ref={el => { if (cellRefs) cellRefs.current[i] = el; }}
+            >
               <FlowCell
                 cell={cell}
                 onUpdate={updates => onUpdateCell(cell.id, updates)}
                 onSetType={type => onSetCellType(cell.id, type)}
+                onTabNext={() => onFocusCell?.(i + 1)}
+                onEnter={onEnter}
               />
             </div>
           </React.Fragment>
