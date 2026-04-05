@@ -45,3 +45,14 @@ export interface FlowData {
   rows: FlowRow[];
   labels: Label[];
 }
+
+export interface FlowTab {
+  id: string;
+  name: string;
+  color: string;
+  data: FlowData;
+  isProtected: boolean;
+  protectionEmail?: string;
+  protectionPassword?: string;
+  isLocked?: boolean;
+}
