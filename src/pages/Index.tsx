@@ -138,7 +138,7 @@ const Index = () => {
                 cellRefs={getRowRefs(row.id)}
                 onFocusCell={cellIndex => {
                   if (cellIndex < data.columns.length) {
-                    setTimeout(() => focusCellInRow(row.id, cellIndex), 0);
+                    focusCellInRow(row.id, cellIndex);
                   }
                 }}
                 onEnter={handleEnterNewRow}
