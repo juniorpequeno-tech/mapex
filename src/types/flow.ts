@@ -39,6 +39,7 @@ export interface FlowRow {
   labels: string[]; // label ids
   observation?: Observation;
   messages: Message[];
+  bgColor?: string;
 }
 
 export interface FlowData {
