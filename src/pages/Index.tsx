@@ -128,12 +128,7 @@ const Index = () => {
                     setTimeout(() => focusCellInRow(row.id, cellIndex), 0);
                   }
                 }}
-                onEnter={() => {
-                  addRow();
-                  setTimeout(() => {
-                    const newRow = data.rows[data.rows.length]; // will be stale, use ref approach
-                  }, 0);
-                }}
+                onEnter={handleEnterNewRow}
               />
             ))}
           </div>
