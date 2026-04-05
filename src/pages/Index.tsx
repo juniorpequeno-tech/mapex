@@ -93,7 +93,7 @@ const Index = () => {
 
           {/* Rows */}
           <div>
-            {data.rows.map(row => (
+            {data.rows.map((row, rowIndex) => (
               <FlowRowComponent
                 key={row.id}
                 row={row}
@@ -106,6 +106,18 @@ const Index = () => {
                 onUpdateObservation={text => updateObservation(row.id, text)}
                 onAddMessage={(to, text) => addMessage(row.id, to, text)}
                 onDelete={() => deleteRow(row.id)}
+                cellRefs={getRowRefs(row.id)}
+                onFocusCell={cellIndex => {
+                  if (cellIndex < data.columns.length) {
+                    setTimeout(() => focusCellInRow(row.id, cellIndex), 0);
+                  }
+                }}
+                onEnter={() => {
+                  addRow();
+                  setTimeout(() => {
+                    const newRow = data.rows[data.rows.length]; // will be stale, use ref approach
+                  }, 0);
+                }}
               />
             ))}
           </div>
