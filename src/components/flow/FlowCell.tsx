@@ -143,6 +143,7 @@ export function FlowCell({ cell, onUpdate, onSetType }: FlowCellProps) {
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
+                locale={ptBR}
                 selected={cell.value ? new Date(cell.value) : undefined}
                 onSelect={d => d && onUpdate({ value: d.toISOString() })}
                 className="p-3 pointer-events-auto"
