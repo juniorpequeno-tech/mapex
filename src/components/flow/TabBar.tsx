@@ -168,7 +168,7 @@ export function TabBar({
         <div
           ref={contextRef}
           className="fixed z-50 bg-popover border border-border rounded-md shadow-md py-1 min-w-[180px]"
-          style={{ left: contextMenu.x, top: contextMenu.y }}
+          style={{ left: contextMenu.x, bottom: window.innerHeight - contextMenu.y }}
           onClick={e => e.stopPropagation()}
         >
           <button
