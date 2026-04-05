@@ -59,6 +59,7 @@ export function FlowRowComponent({
                 onSetType={type => onSetCellType(cell.id, type)}
                 onTabNext={() => onFocusCell?.(i + 1)}
                 onEnter={onEnter}
+                onSetRowColor={onSetRowColor}
               />
             </div>
           </React.Fragment>
