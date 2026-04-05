@@ -15,6 +15,8 @@ interface FlowCellProps {
   cell: CellData;
   onUpdate: (updates: Partial<CellData>) => void;
   onSetType: (type: CellType) => void;
+  onTabNext?: () => void;
+  onEnter?: () => void;
 }
 
 const typeIcons: Record<CellType, React.ReactNode> = {
