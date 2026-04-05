@@ -21,12 +21,14 @@ const typeIcons: Record<CellType, React.ReactNode> = {
   text: <Type className="h-3 w-3" />,
   dropdown: <List className="h-3 w-3" />,
   date: <CalendarIcon className="h-3 w-3" />,
+  file: <Paperclip className="h-3 w-3" />,
 };
 
 const typeLabels: Record<CellType, string> = {
   text: 'Texto',
   dropdown: 'Lista',
   date: 'Data',
+  file: 'Anexo',
 };
 
 export function FlowCell({ cell, onUpdate, onSetType }: FlowCellProps) {
