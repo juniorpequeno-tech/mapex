@@ -10,6 +10,7 @@ export interface CellData {
   type: CellType;
   value: string;
   dropdownOptions?: DropdownOption[];
+  fileName?: string;
   columnIndex: number;
 }
 
