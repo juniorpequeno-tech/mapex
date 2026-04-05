@@ -34,6 +34,14 @@ const typeLabels: Record<CellType, string> = {
 export function FlowCell({ cell, onUpdate, onSetType }: FlowCellProps) {
   const [editingOptions, setEditingOptions] = useState(false);
   const [newOption, setNewOption] = useState('');
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onUpdate({ value: file.name, fileName: file.name });
+    }
+  };
 
   const addDropdownOption = () => {
     if (!newOption.trim()) return;
