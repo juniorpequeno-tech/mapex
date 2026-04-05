@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useFlowStore } from '@/hooks/useFlowStore';
 import { FlowRowComponent } from '@/components/flow/FlowRow';
 import { Plus } from 'lucide-react';
@@ -13,6 +13,25 @@ const Index = () => {
   } = useFlowStore();
 
   const [editingCol, setEditingCol] = useState<number | null>(null);
+  const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
+
+  const getRowRefs = useCallback((rowId: string) => {
+    if (!rowRefsMap.current.has(rowId)) {
+      rowRefsMap.current.set(rowId, { current: [] });
+    }
+    return rowRefsMap.current.get(rowId)!;
+  }, []);
+
+  const focusCellInRow = useCallback((rowId: string, cellIndex: number) => {
+    const refs = rowRefsMap.current.get(rowId);
+    if (refs) {
+      const cellDiv = refs.current[cellIndex];
+      if (cellDiv) {
+        const input = cellDiv.querySelector('input:not([type="file"]), button') as HTMLElement;
+        input?.focus();
+      }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
