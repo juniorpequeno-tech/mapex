@@ -207,13 +207,22 @@ export function useFlowStore() {
     }));
   }, [updateTabData]);
 
+  const setRowColor = useCallback((rowId: string, color: string | undefined) => {
+    updateTabData(prev => ({
+      ...prev,
+      rows: prev.rows.map(row =>
+        row.id === rowId ? { ...row, bgColor: color } : row
+      ),
+    }));
+  }, [updateTabData]);
+
   return {
     tabs, activeTabId, activeTab, data,
     setActiveTabId, addTab, removeTab, renameTab, setTabColor,
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    updateObservation, addMessage,
+    updateObservation, addMessage, setRowColor,
   };
 }
 

@@ -12,6 +12,7 @@ export interface CellData {
   dropdownOptions?: DropdownOption[];
   fileName?: string;
   columnIndex: number;
+  bgColor?: string;
 }
 
 export interface Label {
@@ -38,6 +39,7 @@ export interface FlowRow {
   labels: string[]; // label ids
   observation?: Observation;
   messages: Message[];
+  bgColor?: string;
 }
 
 export interface FlowData {

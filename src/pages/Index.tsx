@@ -12,7 +12,7 @@ const Index = () => {
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    updateObservation, addMessage,
+    updateObservation, addMessage, setRowColor,
   } = useFlowStore();
 
   const [editingCol, setEditingCol] = useState<number | null>(null);
@@ -136,6 +136,7 @@ const Index = () => {
                   onUpdateObservation={text => updateObservation(row.id, text)}
                   onAddMessage={(to, text) => addMessage(row.id, to, text)}
                   onDelete={() => deleteRow(row.id)}
+                  onSetRowColor={(color) => setRowColor(row.id, color)}
                   cellRefs={getRowRefs(row.id)}
                   onFocusCell={cellIndex => {
                     if (cellIndex < data.columns.length) {
