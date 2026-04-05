@@ -225,3 +225,5 @@ export function useFlowStore() {
     updateObservation, addMessage, setRowColor,
   };
 }
+
+export { TAB_COLORS };
