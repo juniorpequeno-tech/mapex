@@ -14,6 +14,7 @@ const Index = () => {
 
   const [editingCol, setEditingCol] = useState<number | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const getRowRefs = useCallback((rowId: string) => {
     if (!rowRefsMap.current.has(rowId)) {
@@ -32,6 +33,21 @@ const Index = () => {
       }
     }
   }, []);
+
+  const handleEnterNewRow = useCallback(() => {
+    addRow();
+    // Focus first cell of new row after render
+    setTimeout(() => {
+      if (containerRef.current) {
+        const rows = containerRef.current.querySelectorAll('[data-flow-row]');
+        const lastRow = rows[rows.length - 1];
+        if (lastRow) {
+          const input = lastRow.querySelector('input:not([type="file"])') as HTMLElement;
+          input?.focus();
+        }
+      }
+    }, 50);
+  }, [addRow]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
