@@ -216,13 +216,18 @@ export function useFlowStore() {
     }));
   }, [updateTabData]);
 
+  const loadTabs = useCallback((newTabs: FlowTab[]) => {
+    setTabs(newTabs);
+    setActiveTabId(newTabs[0]?.id || '');
+  }, []);
+
   return {
     tabs, activeTabId, activeTab, data,
     setActiveTabId, addTab, removeTab, renameTab, setTabColor,
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    updateObservation, addMessage, setRowColor,
+    updateObservation, addMessage, setRowColor, loadTabs,
   };
 }
 

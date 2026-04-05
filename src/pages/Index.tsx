@@ -1,11 +1,18 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useFlowStore } from '@/hooks/useFlowStore';
 import { FlowRowComponent } from '@/components/flow/FlowRow';
 import { TabBar } from '@/components/flow/TabBar';
-import { Plus } from 'lucide-react';
-import { ChevronRight } from 'lucide-react';
+import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil } from 'lucide-react';
+import { getSavedFiles, saveFile } from '@/lib/fileStorage';
+import { SavedFile } from '@/types/flow';
+import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
 
 const Index = () => {
+  const { fileId } = useParams<{ fileId: string }>();
+  const navigate = useNavigate();
+
   const {
     tabs, activeTabId, activeTab, data,
     setActiveTabId, addTab, removeTab, renameTab, setTabColor,
@@ -13,11 +20,43 @@ const Index = () => {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     updateObservation, addMessage, setRowColor,
+    loadTabs,
   } = useFlowStore();
 
+  const [fileName, setFileName] = useState('Sem título');
+  const [editingName, setEditingName] = useState(false);
+  const [currentFileId, setCurrentFileId] = useState<string | null>(null);
   const [editingCol, setEditingCol] = useState<number | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Load file from storage
+  useEffect(() => {
+    if (fileId) {
+      const files = getSavedFiles();
+      const file = files.find(f => f.id === fileId);
+      if (file) {
+        setFileName(file.name);
+        setCurrentFileId(file.id);
+        if (file.tabs.length > 0) {
+          loadTabs(file.tabs);
+        }
+      }
+    }
+  }, [fileId]);
+
+  const handleSave = useCallback(() => {
+    const file: SavedFile = {
+      id: currentFileId || Math.random().toString(36).substr(2, 9),
+      name: fileName,
+      tabs,
+      createdAt: currentFileId ? getSavedFiles().find(f => f.id === currentFileId)?.createdAt || new Date().toISOString() : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    saveFile(file);
+    if (!currentFileId) setCurrentFileId(file.id);
+    toast.success('Arquivo salvo!');
+  }, [currentFileId, fileName, tabs]);
 
   const getRowRefs = useCallback((rowId: string) => {
     if (!rowRefsMap.current.has(rowId)) {
@@ -63,11 +102,49 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Top bar */}
       <div className="border-b border-border px-4 py-3 flex items-center justify-between shrink-0">
-        <h1 className="text-lg font-semibold">Mapa de Fluxos Operacionais</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/')}
+            className="h-7 w-7 rounded hover:bg-accent flex items-center justify-center text-muted-foreground"
+            title="Voltar"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <div className="flex items-center gap-2">
+            <GitBranch className="h-5 w-5 text-primary" />
+            <span className="text-sm font-bold text-primary">Mapex</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          {editingName ? (
+            <Input
+              className="h-7 w-48 text-sm"
+              value={fileName}
+              onChange={e => setFileName(e.target.value)}
+              onBlur={() => setEditingName(false)}
+              onKeyDown={e => { if (e.key === 'Enter') setEditingName(false); }}
+              autoFocus
+            />
+          ) : (
+            <button
+              className="text-sm font-medium hover:text-primary flex items-center gap-1 transition-colors"
+              onClick={() => setEditingName(true)}
+            >
+              {fileName}
+              <Pencil className="h-3 w-3 text-muted-foreground" />
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground">
             {data.rows.length} linha{data.rows.length !== 1 ? 's' : ''} · {data.columns.length} etapa{data.columns.length !== 1 ? 's' : ''}
           </span>
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded hover:opacity-90 transition-opacity"
+          >
+            <Save className="h-3.5 w-3.5" />
+            Salvar
+          </button>
         </div>
       </div>
 
