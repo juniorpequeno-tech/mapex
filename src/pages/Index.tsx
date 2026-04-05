@@ -12,7 +12,7 @@ const Index = () => {
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    updateObservation, addMessage,
+    updateObservation, addMessage, setRowColor,
   } = useFlowStore();
 
   const [editingCol, setEditingCol] = useState<number | null>(null);
