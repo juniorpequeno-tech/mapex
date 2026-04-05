@@ -1,4 +1,4 @@
-export type CellType = 'text' | 'dropdown' | 'date';
+export type CellType = 'text' | 'dropdown' | 'date' | 'file';
 
 export interface DropdownOption {
   id: string;
@@ -10,6 +10,7 @@ export interface CellData {
   type: CellType;
   value: string;
   dropdownOptions?: DropdownOption[];
+  fileName?: string;
   columnIndex: number;
 }
 
