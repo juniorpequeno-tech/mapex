@@ -5,11 +5,16 @@ import { ptBR } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Type, List, CalendarIcon, Paperclip, Plus, X } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Type, List, CalendarIcon, Paperclip, Plus, X, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+
+const CELL_COLORS = [
+  '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6',
+  '#8b5cf6', '#ec4899', '#06b6d4', '#6b7280', 'transparent',
+];
 
 interface FlowCellProps {
   cell: CellData;
@@ -17,6 +22,7 @@ interface FlowCellProps {
   onSetType: (type: CellType) => void;
   onTabNext?: () => void;
   onEnter?: () => void;
+  onSetRowColor?: (color: string | undefined) => void;
 }
 
 const typeIcons: Record<CellType, React.ReactNode> = {
@@ -33,7 +39,7 @@ const typeLabels: Record<CellType, string> = {
   file: 'Anexo',
 };
 
-export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter }: FlowCellProps) {
+export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetRowColor }: FlowCellProps) {
   const [editingOptions, setEditingOptions] = useState(false);
   const [newOption, setNewOption] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -56,6 +62,22 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter }: Flow
     onUpdate({ dropdownOptions: (cell.dropdownOptions || []).filter(o => o.id !== id) });
   };
 
+  const ColorGrid = ({ onSelect }: { onSelect: (color: string | undefined) => void }) => (
+    <div className="grid grid-cols-5 gap-1 p-1">
+      {CELL_COLORS.map(c => (
+        <button
+          key={c}
+          className={cn(
+            "h-5 w-5 rounded border border-border hover:scale-110 transition-transform",
+            c === 'transparent' && "bg-background relative after:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(135deg,transparent_45%,hsl(var(--destructive))_45%,hsl(var(--destructive))_55%,transparent_55%)]"
+          )}
+          style={c !== 'transparent' ? { backgroundColor: c } : undefined}
+          onClick={() => onSelect(c === 'transparent' ? undefined : c)}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <div className="flex items-center gap-1 h-8 min-w-[180px] group/cell">
       <DropdownMenu>
@@ -64,13 +86,29 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter }: Flow
             {typeIcons[cell.type]}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="min-w-[140px]">
+        <DropdownMenuContent align="start" className="min-w-[160px]">
           {(Object.keys(typeLabels) as CellType[]).map(t => (
             <DropdownMenuItem key={t} onClick={() => onSetType(t)} className="gap-2">
               {typeIcons[t]}
               <span>{typeLabels[t]}</span>
             </DropdownMenuItem>
           ))}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="gap-2">
+              <Palette className="h-3 w-3" />
+              <span>Cor</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="p-0 min-w-[180px]">
+              <div className="px-2 py-1.5">
+                <p className="text-xs font-medium text-muted-foreground mb-1">Célula</p>
+                <ColorGrid onSelect={(color) => onUpdate({ bgColor: color })} />
+              </div>
+              <div className="border-t border-border px-2 py-1.5">
+                <p className="text-xs font-medium text-muted-foreground mb-1">Linha</p>
+                <ColorGrid onSelect={(color) => onSetRowColor?.(color)} />
+              </div>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
 

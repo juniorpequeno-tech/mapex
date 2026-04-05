@@ -30,7 +30,7 @@ interface FlowRowProps {
 export function FlowRowComponent({
   row, labels, columnCount, onUpdateCell, onSetCellType,
   onToggleLabel, onAddLabel, onUpdateObservation, onAddMessage, onDelete,
-  onFocusCell, onEnter, cellRefs,
+  onFocusCell, onEnter, cellRefs, onSetRowColor,
 }: FlowRowProps) {
   const [newLabelName, setNewLabelName] = useState('');
   const [msgTo, setMsgTo] = useState('');
