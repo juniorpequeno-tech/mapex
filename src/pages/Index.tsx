@@ -108,7 +108,7 @@ const Index = () => {
           </div>
 
           {/* Rows */}
-          <div>
+          <div ref={containerRef}>
             {data.rows.map((row, rowIndex) => (
               <FlowRowComponent
                 key={row.id}
