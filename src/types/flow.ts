@@ -36,7 +36,7 @@ export interface Message {
 export interface FlowRow {
   id: string;
   cells: CellData[];
-  labels: string[]; // label ids
+  labels: string[];
   observation?: Observation;
   messages: Message[];
   bgColor?: string;
@@ -63,6 +63,14 @@ export interface SavedFile {
   id: string;
   name: string;
   tabs: FlowTab[];
+  folderId?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  color?: string;
+  createdAt: string;
 }
