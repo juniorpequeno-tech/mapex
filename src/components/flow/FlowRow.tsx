@@ -49,7 +49,8 @@ export function FlowRowComponent({
               <ChevronRight className="h-3 w-3 text-muted-foreground/40 shrink-0 mx-0.5" />
             )}
             <div
-              className="flex-1 min-w-[180px] px-1 border-r border-border/50"
+              className="flex-1 min-w-[180px] px-1 border-r border-border/50 rounded-sm"
+              style={cell.bgColor ? { backgroundColor: cell.bgColor + '22' } : undefined}
               ref={el => { if (cellRefs) cellRefs.current[i] = el; }}
             >
               <FlowCell
