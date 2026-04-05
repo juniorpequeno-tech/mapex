@@ -12,6 +12,7 @@ export interface CellData {
   dropdownOptions?: DropdownOption[];
   fileName?: string;
   columnIndex: number;
+  bgColor?: string;
 }
 
 export interface Label {
