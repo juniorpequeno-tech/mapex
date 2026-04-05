@@ -150,6 +150,35 @@ export function FlowCell({ cell, onUpdate, onSetType }: FlowCellProps) {
             </PopoverContent>
           </Popover>
         )}
+
+        {cell.type === 'file' && (
+          <div className="flex items-center gap-1 h-7">
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+            <button
+              className={cn(
+                "w-full h-7 px-2 text-sm text-left border-0 border-b border-transparent hover:border-border transition-colors flex items-center gap-1",
+                !cell.value && "text-muted-foreground"
+              )}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Paperclip className="h-3 w-3 shrink-0" />
+              {cell.value || 'Anexar arquivo...'}
+            </button>
+            {cell.value && (
+              <button
+                className="h-5 w-5 rounded hover:bg-accent text-muted-foreground flex items-center justify-center shrink-0"
+                onClick={() => onUpdate({ value: '', fileName: undefined })}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
