@@ -21,11 +21,15 @@ interface FlowRowProps {
   onUpdateObservation: (text: string) => void;
   onAddMessage: (to: string, text: string) => void;
   onDelete: () => void;
+  onFocusCell?: (cellIndex: number) => void;
+  onEnter?: () => void;
+  cellRefs?: React.MutableRefObject<(HTMLDivElement | null)[]>;
 }
 
 export function FlowRowComponent({
   row, labels, columnCount, onUpdateCell, onSetCellType,
   onToggleLabel, onAddLabel, onUpdateObservation, onAddMessage, onDelete,
+  onFocusCell, onEnter, cellRefs,
 }: FlowRowProps) {
   const [newLabelName, setNewLabelName] = useState('');
   const [msgTo, setMsgTo] = useState('');
