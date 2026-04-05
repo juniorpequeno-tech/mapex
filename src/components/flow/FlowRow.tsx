@@ -21,11 +21,15 @@ interface FlowRowProps {
   onUpdateObservation: (text: string) => void;
   onAddMessage: (to: string, text: string) => void;
   onDelete: () => void;
+  onFocusCell?: (cellIndex: number) => void;
+  onEnter?: () => void;
+  cellRefs?: React.MutableRefObject<(HTMLDivElement | null)[]>;
 }
 
 export function FlowRowComponent({
   row, labels, columnCount, onUpdateCell, onSetCellType,
   onToggleLabel, onAddLabel, onUpdateObservation, onAddMessage, onDelete,
+  onFocusCell, onEnter, cellRefs,
 }: FlowRowProps) {
   const [newLabelName, setNewLabelName] = useState('');
   const [msgTo, setMsgTo] = useState('');
@@ -35,7 +39,7 @@ export function FlowRowComponent({
   const activeLabels = labels.filter(l => row.labels.includes(l.id));
 
   return (
-    <div className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors">
+    <div data-flow-row className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors">
       {/* Cells */}
       <div className="flex flex-1 items-center">
         {row.cells.map((cell, i) => (
@@ -43,11 +47,16 @@ export function FlowRowComponent({
             {i > 0 && (
               <ChevronRight className="h-3 w-3 text-muted-foreground/40 shrink-0 mx-0.5" />
             )}
-            <div className="flex-1 min-w-[180px] px-1 border-r border-border/50">
+            <div
+              className="flex-1 min-w-[180px] px-1 border-r border-border/50"
+              ref={el => { if (cellRefs) cellRefs.current[i] = el; }}
+            >
               <FlowCell
                 cell={cell}
                 onUpdate={updates => onUpdateCell(cell.id, updates)}
                 onSetType={type => onSetCellType(cell.id, type)}
+                onTabNext={() => onFocusCell?.(i + 1)}
+                onEnter={onEnter}
               />
             </div>
           </React.Fragment>

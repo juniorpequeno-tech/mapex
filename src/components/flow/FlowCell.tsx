@@ -15,6 +15,8 @@ interface FlowCellProps {
   cell: CellData;
   onUpdate: (updates: Partial<CellData>) => void;
   onSetType: (type: CellType) => void;
+  onTabNext?: () => void;
+  onEnter?: () => void;
 }
 
 const typeIcons: Record<CellType, React.ReactNode> = {
@@ -31,7 +33,7 @@ const typeLabels: Record<CellType, string> = {
   file: 'Anexo',
 };
 
-export function FlowCell({ cell, onUpdate, onSetType }: FlowCellProps) {
+export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter }: FlowCellProps) {
   const [editingOptions, setEditingOptions] = useState(false);
   const [newOption, setNewOption] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -79,6 +81,15 @@ export function FlowCell({ cell, onUpdate, onSetType }: FlowCellProps) {
             value={cell.value}
             onChange={e => onUpdate({ value: e.target.value })}
             placeholder="Digite aqui..."
+            onKeyDown={e => {
+              if (e.key === 'Tab') {
+                e.preventDefault();
+                onTabNext?.();
+              } else if (e.key === 'Enter') {
+                e.preventDefault();
+                onEnter?.();
+              }
+            }}
           />
         )}
 

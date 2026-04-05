@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useFlowStore } from '@/hooks/useFlowStore';
 import { FlowRowComponent } from '@/components/flow/FlowRow';
 import { Plus } from 'lucide-react';
@@ -13,6 +13,41 @@ const Index = () => {
   } = useFlowStore();
 
   const [editingCol, setEditingCol] = useState<number | null>(null);
+  const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const getRowRefs = useCallback((rowId: string) => {
+    if (!rowRefsMap.current.has(rowId)) {
+      rowRefsMap.current.set(rowId, { current: [] });
+    }
+    return rowRefsMap.current.get(rowId)!;
+  }, []);
+
+  const focusCellInRow = useCallback((rowId: string, cellIndex: number) => {
+    const refs = rowRefsMap.current.get(rowId);
+    if (refs) {
+      const cellDiv = refs.current[cellIndex];
+      if (cellDiv) {
+        const input = cellDiv.querySelector('input:not([type="file"]), button') as HTMLElement;
+        input?.focus();
+      }
+    }
+  }, []);
+
+  const handleEnterNewRow = useCallback(() => {
+    addRow();
+    // Focus first cell of new row after render
+    setTimeout(() => {
+      if (containerRef.current) {
+        const rows = containerRef.current.querySelectorAll('[data-flow-row]');
+        const lastRow = rows[rows.length - 1];
+        if (lastRow) {
+          const input = lastRow.querySelector('input:not([type="file"])') as HTMLElement;
+          input?.focus();
+        }
+      }
+    }, 50);
+  }, [addRow]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -73,8 +108,8 @@ const Index = () => {
           </div>
 
           {/* Rows */}
-          <div>
-            {data.rows.map(row => (
+          <div ref={containerRef}>
+            {data.rows.map((row, rowIndex) => (
               <FlowRowComponent
                 key={row.id}
                 row={row}
@@ -87,6 +122,13 @@ const Index = () => {
                 onUpdateObservation={text => updateObservation(row.id, text)}
                 onAddMessage={(to, text) => addMessage(row.id, to, text)}
                 onDelete={() => deleteRow(row.id)}
+                cellRefs={getRowRefs(row.id)}
+                onFocusCell={cellIndex => {
+                  if (cellIndex < data.columns.length) {
+                    setTimeout(() => focusCellInRow(row.id, cellIndex), 0);
+                  }
+                }}
+                onEnter={handleEnterNewRow}
               />
             ))}
           </div>
