@@ -24,14 +24,27 @@ const Index = () => {
   }, []);
 
   const focusCellInRow = useCallback((rowId: string, cellIndex: number) => {
-    const refs = rowRefsMap.current.get(rowId);
-    if (refs) {
-      const cellDiv = refs.current[cellIndex];
-      if (cellDiv) {
-        const input = cellDiv.querySelector('input:not([type="file"]), button') as HTMLElement;
-        input?.focus();
+    setTimeout(() => {
+      const refs = rowRefsMap.current.get(rowId);
+      if (refs) {
+        const cellDiv = refs.current[cellIndex];
+        if (cellDiv) {
+          // Try text input first, then select trigger button, then any focusable
+          const textInput = cellDiv.querySelector('input.w-full:not([type="file"])') as HTMLElement;
+          if (textInput) {
+            textInput.focus();
+            return;
+          }
+          const selectBtn = cellDiv.querySelector('[role="combobox"]') as HTMLElement;
+          if (selectBtn) {
+            selectBtn.focus();
+            return;
+          }
+          const anyFocusable = cellDiv.querySelector('button, input') as HTMLElement;
+          anyFocusable?.focus();
+        }
       }
-    }
+    }, 0);
   }, []);
 
   const handleEnterNewRow = useCallback(() => {
@@ -125,7 +138,7 @@ const Index = () => {
                 cellRefs={getRowRefs(row.id)}
                 onFocusCell={cellIndex => {
                   if (cellIndex < data.columns.length) {
-                    setTimeout(() => focusCellInRow(row.id, cellIndex), 0);
+                    focusCellInRow(row.id, cellIndex);
                   }
                 }}
                 onEnter={handleEnterNewRow}
