@@ -81,6 +81,15 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter }: Flow
             value={cell.value}
             onChange={e => onUpdate({ value: e.target.value })}
             placeholder="Digite aqui..."
+            onKeyDown={e => {
+              if (e.key === 'Tab') {
+                e.preventDefault();
+                onTabNext?.();
+              } else if (e.key === 'Enter') {
+                e.preventDefault();
+                onEnter?.();
+              }
+            }}
           />
         )}
 
