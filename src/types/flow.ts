@@ -58,3 +58,11 @@ export interface FlowTab {
   protectionPassword?: string;
   isLocked?: boolean;
 }
+
+export interface SavedFile {
+  id: string;
+  name: string;
+  tabs: FlowTab[];
+  createdAt: string;
+  updatedAt: string;
+}
