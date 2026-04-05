@@ -39,7 +39,7 @@ export function FlowRowComponent({
   const activeLabels = labels.filter(l => row.labels.includes(l.id));
 
   return (
-    <div className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors">
+    <div data-flow-row className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors">
       {/* Cells */}
       <div className="flex flex-1 items-center">
         {row.cells.map((cell, i) => (
