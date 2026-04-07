@@ -18,7 +18,7 @@ interface FlowRowProps {
   onSetCellType: (cellId: string, type: CellType) => void;
   onToggleLabel: (labelId: string) => void;
   onAddLabel: (name: string) => void;
-  onUpdateObservation: (text: string) => void;
+  onAddObservation: (text: string) => void;
   onAddMessage: (to: string, text: string) => void;
   onDelete: () => void;
   onFocusCell?: (cellIndex: number) => void;

@@ -210,7 +210,7 @@ const Index = () => {
                   onSetCellType={(cellId, type) => setCellType(row.id, cellId, type)}
                   onToggleLabel={labelId => toggleLabel(row.id, labelId)}
                   onAddLabel={addLabel}
-                  onUpdateObservation={text => updateObservation(row.id, text)}
+                  onAddObservation={text => addObservation(row.id, text)}
                   onAddMessage={(to, text) => addMessage(row.id, to, text)}
                   onDelete={() => deleteRow(row.id)}
                   onSetRowColor={(color) => setRowColor(row.id, color)}
