@@ -38,22 +38,19 @@ export function FlowRowComponent({
   const [obsText, setObsText] = useState('');
   const [obsOpen, setObsOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
+  const [chatDialogOpen, setChatDialogOpen] = useState(false);
   const obsTextareaRef = React.useRef<HTMLTextAreaElement>(null);
   const msgInputRef = React.useRef<HTMLInputElement>(null);
 
   const activeLabels = labels.filter(l => row.labels.includes(l.id));
 
   const openObservationChat = () => {
-    // Delay to let DropdownMenu fully close before opening Popover
-    setTimeout(() => {
-      setObsOpen(true);
-    }, 200);
+    // Use Dialog instead of Popover when opened from cell menu to avoid DropdownMenu conflicts
+    setTimeout(() => setChatDialogOpen(true), 150);
   };
 
   const openMessages = () => {
-    setTimeout(() => {
-      setMsgOpen(true);
-    }, 200);
+    setTimeout(() => setMsgOpen(true), 200);
   };
 
   return (
