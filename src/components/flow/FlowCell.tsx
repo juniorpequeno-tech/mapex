@@ -111,6 +111,14 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetR
               </div>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
+          <DropdownMenuItem onClick={() => onOpenObservations?.()} className="gap-2">
+            <FileText className="h-3 w-3" />
+            <span>Observações</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onOpenMessages?.()} className="gap-2">
+            <MessageSquare className="h-3 w-3" />
+            <span>Recados</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
