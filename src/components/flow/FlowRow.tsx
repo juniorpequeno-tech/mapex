@@ -3,8 +3,7 @@ import { FlowRow as FlowRowType, Label } from '@/types/flow';
 import { FlowCell } from './FlowCell';
 import { CellData, CellType } from '@/types/flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Tag, MessageSquare, FileText, Trash2, Plus, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Tag, MessageSquare, FileText, Trash2, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -38,8 +37,18 @@ export function FlowRowComponent({
   const [obsText, setObsText] = useState('');
   const [obsOpen, setObsOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
+  const obsTextareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const msgInputRef = React.useRef<HTMLInputElement>(null);
 
   const activeLabels = labels.filter(l => row.labels.includes(l.id));
+
+  const openObservationChat = () => {
+    setTimeout(() => setObsOpen(true), 0);
+  };
+
+  const openMessages = () => {
+    setTimeout(() => setMsgOpen(true), 0);
+  };
 
   return (
     <div data-flow-row className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors" style={row.bgColor ? { backgroundColor: row.bgColor + '22' } : undefined}>
@@ -62,8 +71,8 @@ export function FlowRowComponent({
                 onTabNext={() => onFocusCell?.(i + 1)}
                 onEnter={onEnter}
                 onSetRowColor={onSetRowColor}
-                onOpenObservations={() => setObsOpen(true)}
-                onOpenMessages={() => setMsgOpen(true)}
+                onOpenObservations={openObservationChat}
+                onOpenMessages={openMessages}
               />
             </div>
           </React.Fragment>
@@ -148,7 +157,14 @@ export function FlowRowComponent({
               )}
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-72 p-3" align="end">
+          <PopoverContent
+            className="w-72 p-3"
+            align="end"
+            onOpenAutoFocus={event => {
+              event.preventDefault();
+              obsTextareaRef.current?.focus();
+            }}
+          >
             <p className="text-xs font-medium mb-2 text-muted-foreground">
               Observações — {row.cells[0]?.value || 'Nova Etapa'}
             </p>
@@ -168,6 +184,7 @@ export function FlowRowComponent({
             )}
             <div className="flex items-end gap-2">
               <Textarea
+                ref={obsTextareaRef}
                 value={obsText}
                 onChange={e => setObsText(e.target.value)}
                 placeholder="Escreva uma observação..."
@@ -209,7 +226,14 @@ export function FlowRowComponent({
               )}
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-64 p-3" align="end">
+          <PopoverContent
+            className="w-64 p-3"
+            align="end"
+            onOpenAutoFocus={event => {
+              event.preventDefault();
+              msgInputRef.current?.focus();
+            }}
+          >
             <p className="text-xs font-medium mb-2 text-muted-foreground">Recados</p>
             {row.messages.length > 0 && (
               <div className="space-y-1.5 mb-2 max-h-32 overflow-y-auto">
@@ -221,6 +245,7 @@ export function FlowRowComponent({
               </div>
             )}
             <Input
+              ref={msgInputRef}
               value={msgTo}
               onChange={e => setMsgTo(e.target.value)}
               placeholder="Para quem?"
@@ -260,3 +285,4 @@ export function FlowRowComponent({
     </div>
   );
 }
+
