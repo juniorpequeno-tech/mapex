@@ -36,6 +36,8 @@ export function FlowRowComponent({
   const [msgTo, setMsgTo] = useState('');
   const [msgText, setMsgText] = useState('');
   const [obsText, setObsText] = useState('');
+  const [obsOpen, setObsOpen] = useState(false);
+  const [msgOpen, setMsgOpen] = useState(false);
 
   const activeLabels = labels.filter(l => row.labels.includes(l.id));
 
