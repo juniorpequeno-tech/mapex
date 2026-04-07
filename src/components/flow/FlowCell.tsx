@@ -41,7 +41,7 @@ const typeLabels: Record<CellType, string> = {
   file: 'Anexo',
 };
 
-export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetRowColor }: FlowCellProps) {
+export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetRowColor, onOpenObservations, onOpenMessages }: FlowCellProps) {
   const [editingOptions, setEditingOptions] = useState(false);
   const [newOption, setNewOption] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
