@@ -188,11 +188,12 @@ export function useFlowStore() {
     return newLabel;
   }, [data.labels.length, updateTabData]);
 
-  const updateObservation = useCallback((rowId: string, text: string) => {
+  const addObservation = useCallback((rowId: string, text: string) => {
+    const entry = { id: generateId(), text, createdAt: new Date().toISOString() };
     updateTabData(prev => ({
       ...prev,
       rows: prev.rows.map(row =>
-        row.id === rowId ? { ...row, observation: { text, files: row.observation?.files || [] } } : row
+        row.id === rowId ? { ...row, observation: { entries: [...(row.observation?.entries || []), entry], files: row.observation?.files || [] } } : row
       ),
     }));
   }, [updateTabData]);
@@ -227,7 +228,7 @@ export function useFlowStore() {
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    updateObservation, addMessage, setRowColor, loadTabs,
+    addObservation, addMessage, setRowColor, loadTabs,
   };
 }
 
