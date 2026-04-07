@@ -134,26 +134,64 @@ export function FlowRowComponent({
           </PopoverContent>
         </Popover>
 
-        {/* Observations */}
+        {/* Observations - Chat log */}
         <Popover>
           <PopoverTrigger asChild>
             <button className="h-6 w-6 rounded hover:bg-accent flex items-center justify-center text-muted-foreground relative">
               <FileText className="h-3.5 w-3.5" />
-              {row.observation?.text && (
+              {(row.observation?.entries?.length ?? 0) > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
               )}
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-64 p-3" align="end">
-            <p className="text-xs font-medium mb-2 text-muted-foreground">Observações</p>
-            <Textarea
-              value={obsText}
-              onChange={e => setObsText(e.target.value)}
-              onBlur={() => onUpdateObservation(obsText)}
-              placeholder="Escreva uma observação..."
-              className="text-xs min-h-[60px] mb-2"
-            />
-            <p className="text-[10px] text-muted-foreground">Upload de arquivos em breve</p>
+          <PopoverContent className="w-72 p-3" align="end">
+            <p className="text-xs font-medium mb-2 text-muted-foreground">
+              Observações — {row.cells[0]?.value || 'Nova Etapa'}
+            </p>
+            {(row.observation?.entries?.length ?? 0) > 0 && (
+              <div className="space-y-2 mb-3 max-h-48 overflow-y-auto">
+                {row.observation!.entries.map(entry => (
+                  <div key={entry.id} className="text-xs p-2 rounded-lg bg-accent/50 border border-border/50">
+                    <p className="text-foreground">{entry.text}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      {new Date(entry.createdAt).toLocaleDateString('pt-BR')}
+                      {', '}
+                      {new Date(entry.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="flex items-end gap-2">
+              <Textarea
+                value={obsText}
+                onChange={e => setObsText(e.target.value)}
+                placeholder="Escreva uma observação..."
+                className="text-xs min-h-[40px] flex-1"
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (obsText.trim()) {
+                      onAddObservation(obsText.trim());
+                      setObsText('');
+                    }
+                  }
+                }}
+              />
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-8 w-8 p-0 shrink-0"
+                onClick={() => {
+                  if (obsText.trim()) {
+                    onAddObservation(obsText.trim());
+                    setObsText('');
+                  }
+                }}
+              >
+                <MessageSquare className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </PopoverContent>
         </Popover>
 
