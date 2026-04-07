@@ -19,7 +19,7 @@ const Index = () => {
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    updateObservation, addMessage, setRowColor,
+    addObservation, addMessage, setRowColor,
     loadTabs,
   } = useFlowStore();
 
