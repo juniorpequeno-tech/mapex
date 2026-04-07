@@ -62,6 +62,8 @@ export function FlowRowComponent({
                 onTabNext={() => onFocusCell?.(i + 1)}
                 onEnter={onEnter}
                 onSetRowColor={onSetRowColor}
+                onOpenObservations={() => setObsOpen(true)}
+                onOpenMessages={() => setMsgOpen(true)}
               />
             </div>
           </React.Fragment>
