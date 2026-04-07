@@ -21,8 +21,14 @@ export interface Label {
   color: string;
 }
 
-export interface Observation {
+export interface ObservationEntry {
+  id: string;
   text: string;
+  createdAt: string;
+}
+
+export interface Observation {
+  entries: ObservationEntry[];
   files: { name: string; url: string }[];
 }
 
