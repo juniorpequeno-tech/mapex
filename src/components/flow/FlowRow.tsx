@@ -285,6 +285,62 @@ export function FlowRowComponent({
           <Trash2 className="h-3.5 w-3.5" />
         </button>
       </div>
+
+      {/* Chat Dialog - opened from cell menu */}
+      <Dialog open={chatDialogOpen} onOpenChange={setChatDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-sm">
+              Chat — {row.cells[0]?.value || 'Nova Etapa'}
+            </DialogTitle>
+          </DialogHeader>
+          {(row.observation?.entries?.length ?? 0) > 0 && (
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {row.observation!.entries.map(entry => (
+                <div key={entry.id} className="text-xs p-2 rounded-lg bg-accent/50 border border-border/50">
+                  <p className="text-foreground">{entry.text}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    {new Date(entry.createdAt).toLocaleDateString('pt-BR')}
+                    {', '}
+                    {new Date(entry.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex items-end gap-2">
+            <Textarea
+              value={obsText}
+              onChange={e => setObsText(e.target.value)}
+              placeholder="Escreva uma observação..."
+              className="text-xs min-h-[40px] flex-1"
+              autoFocus
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  if (obsText.trim()) {
+                    onAddObservation(obsText.trim());
+                    setObsText('');
+                  }
+                }
+              }}
+            />
+            <Button
+              size="sm"
+              variant="secondary"
+              className="h-8 w-8 p-0 shrink-0"
+              onClick={() => {
+                if (obsText.trim()) {
+                  onAddObservation(obsText.trim());
+                  setObsText('');
+                }
+              }}
+            >
+              <MessageSquare className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
