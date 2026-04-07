@@ -139,7 +139,7 @@ export function FlowRowComponent({
         </Popover>
 
         {/* Observations - Chat log */}
-        <Popover>
+        <Popover open={obsOpen} onOpenChange={setObsOpen}>
           <PopoverTrigger asChild>
             <button className="h-6 w-6 rounded hover:bg-accent flex items-center justify-center text-muted-foreground relative">
               <FileText className="h-3.5 w-3.5" />
