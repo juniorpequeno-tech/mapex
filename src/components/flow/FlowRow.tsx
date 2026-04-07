@@ -36,6 +36,8 @@ export function FlowRowComponent({
   const [msgTo, setMsgTo] = useState('');
   const [msgText, setMsgText] = useState('');
   const [obsText, setObsText] = useState('');
+  const [obsOpen, setObsOpen] = useState(false);
+  const [msgOpen, setMsgOpen] = useState(false);
 
   const activeLabels = labels.filter(l => row.labels.includes(l.id));
 
@@ -60,6 +62,8 @@ export function FlowRowComponent({
                 onTabNext={() => onFocusCell?.(i + 1)}
                 onEnter={onEnter}
                 onSetRowColor={onSetRowColor}
+                onOpenObservations={() => setObsOpen(true)}
+                onOpenMessages={() => setMsgOpen(true)}
               />
             </div>
           </React.Fragment>
@@ -135,7 +139,7 @@ export function FlowRowComponent({
         </Popover>
 
         {/* Observations - Chat log */}
-        <Popover>
+        <Popover open={obsOpen} onOpenChange={setObsOpen}>
           <PopoverTrigger asChild>
             <button className="h-6 w-6 rounded hover:bg-accent flex items-center justify-center text-muted-foreground relative">
               <FileText className="h-3.5 w-3.5" />
@@ -196,7 +200,7 @@ export function FlowRowComponent({
         </Popover>
 
         {/* Messages */}
-        <Popover>
+        <Popover open={msgOpen} onOpenChange={setMsgOpen}>
           <PopoverTrigger asChild>
             <button className="h-6 w-6 rounded hover:bg-accent flex items-center justify-center text-muted-foreground relative">
               <MessageSquare className="h-3.5 w-3.5" />

@@ -6,7 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Type, List, CalendarIcon, Paperclip, Plus, X, Palette } from 'lucide-react';
+import { Type, List, CalendarIcon, Paperclip, Plus, X, Palette, FileText, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,8 @@ interface FlowCellProps {
   onTabNext?: () => void;
   onEnter?: () => void;
   onSetRowColor?: (color: string | undefined) => void;
+  onOpenObservations?: () => void;
+  onOpenMessages?: () => void;
 }
 
 const typeIcons: Record<CellType, React.ReactNode> = {
@@ -39,7 +41,7 @@ const typeLabels: Record<CellType, string> = {
   file: 'Anexo',
 };
 
-export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetRowColor }: FlowCellProps) {
+export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetRowColor, onOpenObservations, onOpenMessages }: FlowCellProps) {
   const [editingOptions, setEditingOptions] = useState(false);
   const [newOption, setNewOption] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -109,6 +111,14 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetR
               </div>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
+          <DropdownMenuItem onClick={() => onOpenObservations?.()} className="gap-2">
+            <FileText className="h-3 w-3" />
+            <span>Observações</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onOpenMessages?.()} className="gap-2">
+            <MessageSquare className="h-3 w-3" />
+            <span>Recados</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
