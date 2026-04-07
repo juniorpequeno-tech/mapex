@@ -3,6 +3,7 @@ import { FlowRow as FlowRowType, Label } from '@/types/flow';
 import { FlowCell } from './FlowCell';
 import { CellData, CellType } from '@/types/flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tag, MessageSquare, FileText, Trash2, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -37,17 +38,19 @@ export function FlowRowComponent({
   const [obsText, setObsText] = useState('');
   const [obsOpen, setObsOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
+  const [chatDialogOpen, setChatDialogOpen] = useState(false);
   const obsTextareaRef = React.useRef<HTMLTextAreaElement>(null);
   const msgInputRef = React.useRef<HTMLInputElement>(null);
 
   const activeLabels = labels.filter(l => row.labels.includes(l.id));
 
   const openObservationChat = () => {
-    setTimeout(() => setObsOpen(true), 0);
+    // Use Dialog instead of Popover when opened from cell menu to avoid DropdownMenu conflicts
+    setTimeout(() => setChatDialogOpen(true), 150);
   };
 
   const openMessages = () => {
-    setTimeout(() => setMsgOpen(true), 0);
+    setTimeout(() => setMsgOpen(true), 200);
   };
 
   return (
@@ -282,6 +285,62 @@ export function FlowRowComponent({
           <Trash2 className="h-3.5 w-3.5" />
         </button>
       </div>
+
+      {/* Chat Dialog - opened from cell menu */}
+      <Dialog open={chatDialogOpen} onOpenChange={setChatDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-sm">
+              Chat — {row.cells[0]?.value || 'Nova Etapa'}
+            </DialogTitle>
+          </DialogHeader>
+          {(row.observation?.entries?.length ?? 0) > 0 && (
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {row.observation!.entries.map(entry => (
+                <div key={entry.id} className="text-xs p-2 rounded-lg bg-accent/50 border border-border/50">
+                  <p className="text-foreground">{entry.text}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    {new Date(entry.createdAt).toLocaleDateString('pt-BR')}
+                    {', '}
+                    {new Date(entry.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex items-end gap-2">
+            <Textarea
+              value={obsText}
+              onChange={e => setObsText(e.target.value)}
+              placeholder="Escreva uma observação..."
+              className="text-xs min-h-[40px] flex-1"
+              autoFocus
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  if (obsText.trim()) {
+                    onAddObservation(obsText.trim());
+                    setObsText('');
+                  }
+                }
+              }}
+            />
+            <Button
+              size="sm"
+              variant="secondary"
+              className="h-8 w-8 p-0 shrink-0"
+              onClick={() => {
+                if (obsText.trim()) {
+                  onAddObservation(obsText.trim());
+                  setObsText('');
+                }
+              }}
+            >
+              <MessageSquare className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
