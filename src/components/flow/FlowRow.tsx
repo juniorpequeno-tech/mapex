@@ -3,6 +3,7 @@ import { FlowRow as FlowRowType, Label } from '@/types/flow';
 import { FlowCell } from './FlowCell';
 import { CellData, CellType } from '@/types/flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tag, MessageSquare, FileText, Trash2, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
