@@ -200,7 +200,7 @@ export function FlowRowComponent({
         </Popover>
 
         {/* Messages */}
-        <Popover>
+        <Popover open={msgOpen} onOpenChange={setMsgOpen}>
           <PopoverTrigger asChild>
             <button className="h-6 w-6 rounded hover:bg-accent flex items-center justify-center text-muted-foreground relative">
               <MessageSquare className="h-3.5 w-3.5" />
