@@ -228,7 +228,7 @@ export function useFlowStore() {
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    updateObservation, addMessage, setRowColor, loadTabs,
+    addObservation, addMessage, setRowColor, loadTabs,
   };
 }
 
