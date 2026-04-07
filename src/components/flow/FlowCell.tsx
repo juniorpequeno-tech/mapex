@@ -23,6 +23,8 @@ interface FlowCellProps {
   onTabNext?: () => void;
   onEnter?: () => void;
   onSetRowColor?: (color: string | undefined) => void;
+  onOpenObservations?: () => void;
+  onOpenMessages?: () => void;
 }
 
 const typeIcons: Record<CellType, React.ReactNode> = {
