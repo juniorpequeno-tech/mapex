@@ -43,11 +43,16 @@ export function FlowRowComponent({
   const activeLabels = labels.filter(l => row.labels.includes(l.id));
 
   const openObservationChat = () => {
-    setTimeout(() => setObsOpen(true), 0);
+    // Delay to let DropdownMenu fully close before opening Popover
+    setTimeout(() => {
+      setObsOpen(true);
+    }, 200);
   };
 
   const openMessages = () => {
-    setTimeout(() => setMsgOpen(true), 0);
+    setTimeout(() => {
+      setMsgOpen(true);
+    }, 200);
   };
 
   return (
