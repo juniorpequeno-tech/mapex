@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Paintbrush, PaintBucket, Grid3X3, Type } from 'lucide-react';
+import { Paintbrush, PaintBucket, Grid3X3, Type, Palette } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
@@ -20,10 +20,12 @@ interface FormatToolbarProps {
   onPaintRow: (color: string | undefined) => void;
   onSetBorder: (color: string | undefined) => void;
   onSetFontSize: (size: number) => void;
+  onSetFontColor: (color: string | undefined) => void;
   currentCellColor?: string;
   currentRowColor?: string;
   currentBorder?: string;
   currentFontSize?: number;
+  currentFontColor?: string;
   disabled?: boolean;
 }
 
@@ -49,8 +51,8 @@ function ColorPicker({ colors, onSelect, current }: { colors: string[]; onSelect
 }
 
 export function FormatToolbar({
-  onPaintCell, onPaintRow, onSetBorder, onSetFontSize,
-  currentCellColor, currentRowColor, currentBorder, currentFontSize = 14,
+  onPaintCell, onPaintRow, onSetBorder, onSetFontSize, onSetFontColor,
+  currentCellColor, currentRowColor, currentBorder, currentFontSize = 14, currentFontColor,
   disabled,
 }: FormatToolbarProps) {
   if (disabled) return null;
@@ -116,6 +118,23 @@ export function FormatToolbar({
         <PopoverContent className="w-auto p-0" align="start">
           <p className="text-xs font-medium text-muted-foreground px-2 pt-2">Cor da borda</p>
           <ColorPicker colors={BORDER_COLORS} onSelect={onSetBorder} current={currentBorder} />
+        </PopoverContent>
+      </Popover>
+
+      {/* Font Color */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className="h-7 px-2 rounded hover:bg-accent flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            title="Cor da fonte"
+          >
+            <span className="font-bold text-sm" style={currentFontColor ? { color: currentFontColor } : undefined}>A</span>
+            <span className="hidden sm:inline">Fonte</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <p className="text-xs font-medium text-muted-foreground px-2 pt-2">Cor da fonte</p>
+          <ColorPicker colors={COLORS} onSelect={onSetFontColor} current={currentFontColor} />
         </PopoverContent>
       </Popover>
 

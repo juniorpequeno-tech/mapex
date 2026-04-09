@@ -261,18 +261,12 @@ const Index = () => {
           currentRowColor={data.headerStyle?.bgColor}
           currentBorder={data.headerStyle?.borderColor}
           currentFontSize={data.headerStyle?.fontSize || 12}
-          onPaintCell={(color) => {
-            // Not applicable for header row
-          }}
-          onPaintRow={(color) => {
-            updateHeaderStyle({ bgColor: color });
-          }}
-          onSetBorder={(color) => {
-            updateHeaderStyle({ borderColor: color });
-          }}
-          onSetFontSize={(size) => {
-            updateHeaderStyle({ fontSize: size });
-          }}
+          currentFontColor={data.headerStyle?.fontColor}
+          onPaintCell={() => {}}
+          onPaintRow={(color) => updateHeaderStyle({ bgColor: color })}
+          onSetBorder={(color) => updateHeaderStyle({ borderColor: color })}
+          onSetFontSize={(size) => updateHeaderStyle({ fontSize: size })}
+          onSetFontColor={(color) => updateHeaderStyle({ fontColor: color })}
         />
       )}
 
@@ -299,6 +293,7 @@ const Index = () => {
                 backgroundColor: data.headerStyle?.bgColor || undefined,
                 borderColor: data.headerStyle?.borderColor || undefined,
                 fontSize: data.headerStyle?.fontSize ? `${data.headerStyle.fontSize}px` : undefined,
+                color: data.headerStyle?.fontColor || undefined,
                 ...(!data.headerStyle?.bgColor ? { background: 'hsl(var(--muted) / 0.5)' } : {}),
               }}
             >
