@@ -481,7 +481,10 @@ const Index = () => {
                     }
                   }}
                   onEnter={canEdit ? handleEnterNewRow : () => {}}
-                  onSelectCell={(rowId, cellId, el) => { selectCell(el, { type: 'data', rowId, cellId }); }}
+                  onSelectCell={(rowId, cellId, el) => {
+                    const colIdx = row.cells.findIndex(c => c.id === cellId);
+                    selectCell(el, { type: 'data', rowId, cellId, colIndex: colIdx >= 0 ? colIdx : undefined });
+                  }}
                 />
               ))}
             </div>
