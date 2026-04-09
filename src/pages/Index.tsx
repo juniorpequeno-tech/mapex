@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 const Index = () => {
   const { fileId } = useParams<{ fileId: string }>();
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, profile } = useAuth();
 
   const {
     tabs, activeTabId, activeTab, data,
