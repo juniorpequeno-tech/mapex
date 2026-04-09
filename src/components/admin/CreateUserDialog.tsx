@@ -108,12 +108,6 @@ const CreateUserDialog = ({ open, onOpenChange, onSuccess, isMasterAdmin }: Crea
     onSuccess();
   };
 
-  const copyPassword = () => {
-    if (generatedPassword) {
-      navigator.clipboard.writeText(generatedPassword);
-      toast({ title: "Copiado!", description: "Senha copiada para a área de transferência." });
-    }
-  };
 
   const handleClose = () => {
     resetForm();
