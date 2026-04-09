@@ -49,6 +49,28 @@ const Index = () => {
     document.addEventListener('mouseup', onMouseUp);
   }, [setColumnWidth]);
 
+  const handleColumnAutoFit = useCallback((colIndex: number) => {
+    if (!containerRef.current) return;
+    const MIN_WIDTH = 100;
+    const PADDING = 32;
+    // Measure header text
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.font = '600 14px Inter, system-ui, sans-serif';
+    let maxWidth = ctx.measureText(data.columns[colIndex] || '').width + PADDING;
+    // Measure all cell contents in this column
+    ctx.font = '400 14px Inter, system-ui, sans-serif';
+    for (const row of data.rows) {
+      const cell = row.cells[colIndex];
+      if (cell?.value) {
+        const textWidth = ctx.measureText(String(cell.value)).width + PADDING;
+        if (textWidth > maxWidth) maxWidth = textWidth;
+      }
+    }
+    setColumnWidth(colIndex, Math.max(MIN_WIDTH, Math.ceil(maxWidth)));
+  }, [data.columns, data.rows, setColumnWidth]);
+
   const [fileName, setFileName] = useState('Sem título');
   const [editingName, setEditingName] = useState(false);
   const [currentFile, setCurrentFile] = useState<SavedFile | null>(null);
@@ -389,6 +411,7 @@ const Index = () => {
                         <div
                           className="absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:bg-primary/40 transition-colors z-20"
                           onMouseDown={e => handleColumnResize(i, e.clientX, columnWidths[i])}
+                          onDoubleClick={() => handleColumnAutoFit(i)}
                         />
                       )}
                     </div>
