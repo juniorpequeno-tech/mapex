@@ -57,8 +57,20 @@ const Index = () => {
   const [fileLoaded, setFileLoaded] = useState(false);
   // Track selected cell via ref to avoid full re-renders
   const selectedInfoRef = useRef<{ type: 'header' | 'data'; colIndex?: number; rowId?: string; cellId?: string } | null>(null);
+  const selectedElRef = useRef<HTMLElement | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectCell = useCallback((el: HTMLElement | null, info: typeof selectedInfoRef.current) => {
+    if (selectedElRef.current) {
+      selectedElRef.current.classList.remove('ring-2', 'ring-primary', 'ring-inset');
+    }
+    selectedInfoRef.current = info;
+    selectedElRef.current = el;
+    if (el) {
+      el.classList.add('ring-2', 'ring-primary', 'ring-inset');
+    }
+  }, []);
 
   // Determine permission
   const permission = currentFile?.permission || 'owner';
