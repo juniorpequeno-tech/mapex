@@ -313,8 +313,19 @@ const Index = () => {
                       </div>
                     )}
                     <div
-                      className="relative px-2 py-2 border-r border-border/50 shrink-0"
-                      style={{ width: columnWidths[i] }}
+                      className={cn(
+                        "relative px-2 py-2 border-r border-border/50 shrink-0 cursor-pointer transition-colors",
+                        selectedHeaderCol === i && "ring-2 ring-primary ring-inset"
+                      )}
+                      style={{
+                        width: columnWidths[i],
+                        backgroundColor: data.columnHeaderStyles?.[i]?.bgColor || undefined,
+                      }}
+                      onClick={() => {
+                        if (canEdit) {
+                          setSelectedHeaderCol(prev => prev === i ? null : i);
+                        }
+                      }}
                     >
                       {editingCol === i && canEdit ? (
                         <input
@@ -328,6 +339,7 @@ const Index = () => {
                           onBlur={() => setEditingCol(null)}
                           onKeyDown={e => e.key === 'Enter' && setEditingCol(null)}
                           autoFocus
+                          onClick={e => e.stopPropagation()}
                         />
                       ) : (
                         <button
@@ -336,7 +348,11 @@ const Index = () => {
                             fontSize: data.headerStyle?.fontSize ? `${data.headerStyle.fontSize}px` : '12px',
                             color: data.headerStyle?.fontColor || 'hsl(var(--muted-foreground))',
                           }}
-                          onClick={() => canEdit && setEditingCol(i)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            canEdit && setEditingCol(i);
+                          }}
+                          onClick={e => e.stopPropagation()}
                         >
                           {col}
                         </button>
