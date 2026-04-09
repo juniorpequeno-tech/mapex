@@ -26,7 +26,7 @@ interface FlowRowProps {
   onEnter?: () => void;
   cellRefs?: React.MutableRefObject<(HTMLDivElement | null)[]>;
   onSetRowColor?: (color: string | undefined) => void;
-  onSelectCell?: (rowId: string, cellId: string) => void;
+  onSelectCell?: (rowId: string, cellId: string, el: HTMLElement) => void;
 }
 
 export function FlowRowComponent({
