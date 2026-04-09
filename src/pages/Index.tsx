@@ -257,12 +257,12 @@ const Index = () => {
       {canEdit && (
         <FormatToolbar
           disabled={false}
-          currentCellColor={undefined}
+          currentCellColor={data.headerStyle?.bgColor}
           currentRowColor={data.headerStyle?.bgColor}
           currentBorder={data.headerStyle?.borderColor}
           currentFontSize={data.headerStyle?.fontSize || 12}
           currentFontColor={data.headerStyle?.fontColor}
-          onPaintCell={() => {}}
+          onPaintCell={(color) => updateHeaderStyle({ bgColor: color })}
           onPaintRow={(color) => updateHeaderStyle({ bgColor: color })}
           onSetBorder={(color) => updateHeaderStyle({ borderColor: color })}
           onSetFontSize={(size) => updateHeaderStyle({ fontSize: size })}
@@ -288,12 +288,11 @@ const Index = () => {
           <div className="min-w-fit">
             {/* Column headers */}
             <div
-              className="flex border-b-2 sticky top-0 z-10"
+              className="flex sticky top-0 z-10"
               style={{
                 backgroundColor: data.headerStyle?.bgColor || undefined,
-                borderColor: data.headerStyle?.borderColor || undefined,
-                fontSize: data.headerStyle?.fontSize ? `${data.headerStyle.fontSize}px` : undefined,
-                color: data.headerStyle?.fontColor || undefined,
+                border: data.headerStyle?.borderColor ? `2px solid ${data.headerStyle.borderColor}` : undefined,
+                borderBottom: !data.headerStyle?.borderColor ? '2px solid hsl(var(--border))' : undefined,
                 ...(!data.headerStyle?.bgColor ? { background: 'hsl(var(--muted) / 0.5)' } : {}),
               }}
             >
@@ -311,7 +310,11 @@ const Index = () => {
                     >
                       {editingCol === i && canEdit ? (
                         <input
-                          className="w-full h-6 px-1 text-xs font-medium bg-background border border-primary rounded focus:outline-none"
+                          className="w-full h-6 px-1 font-medium bg-background border border-primary rounded focus:outline-none"
+                          style={{
+                            fontSize: data.headerStyle?.fontSize ? `${data.headerStyle.fontSize}px` : '12px',
+                            color: data.headerStyle?.fontColor || undefined,
+                          }}
                           value={col}
                           onChange={e => updateColumnTitle(i, e.target.value)}
                           onBlur={() => setEditingCol(null)}
@@ -320,7 +323,11 @@ const Index = () => {
                         />
                       ) : (
                         <button
-                          className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors truncate w-full text-left"
+                          className="font-medium hover:opacity-80 transition-colors truncate w-full text-left"
+                          style={{
+                            fontSize: data.headerStyle?.fontSize ? `${data.headerStyle.fontSize}px` : '12px',
+                            color: data.headerStyle?.fontColor || 'hsl(var(--muted-foreground))',
+                          }}
                           onClick={() => canEdit && setEditingCol(i)}
                         >
                           {col}
