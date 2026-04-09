@@ -20,10 +20,12 @@ interface FormatToolbarProps {
   onPaintRow: (color: string | undefined) => void;
   onSetBorder: (color: string | undefined) => void;
   onSetFontSize: (size: number) => void;
+  onSetFontColor: (color: string | undefined) => void;
   currentCellColor?: string;
   currentRowColor?: string;
   currentBorder?: string;
   currentFontSize?: number;
+  currentFontColor?: string;
   disabled?: boolean;
 }
 
