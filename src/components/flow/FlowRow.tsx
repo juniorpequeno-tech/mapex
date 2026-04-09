@@ -69,7 +69,7 @@ export function FlowRowComponent({
               <ChevronRight className="h-3 w-3 text-muted-foreground/40 shrink-0 mx-0.5" />
             )}
             <div
-              className="px-1 border-r border-border/50 rounded-sm shrink-0"
+              className="px-1 border-r border-border/50 rounded-sm shrink-0 cursor-pointer"
               style={{
                 width: columnWidths?.[i] || 220,
                 ...(cell.bgColor ? { backgroundColor: cell.bgColor + '22' } : {}),
@@ -77,6 +77,7 @@ export function FlowRowComponent({
                 ...(cell.fontSize ? { fontSize: `${cell.fontSize}px` } : {}),
               }}
               ref={el => { if (cellRefs) cellRefs.current[i] = el; }}
+              onClick={() => onSelectCell?.(row.id, cell.id)}
             >
               <FlowCell
                 cell={cell}
