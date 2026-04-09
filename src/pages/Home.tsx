@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { getSavedFiles, deleteFile, createNewFile, saveFile, getFolders, createFolder, deleteFolder, moveFileToFolder } from '@/lib/fileStorage';
 import { SavedFile, Folder } from '@/types/flow';
 import {
   Plus, FileText, Trash2, FolderOpen, GitBranch, Search,
-  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical,
+  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import { toast } from 'sonner';
 type SortMode = 'updated' | 'created' | 'name';
 
 const Home = () => {
+  const { signOut, profile } = useAuth();
   const [files, setFiles] = useState<SavedFile[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [newFileDialog, setNewFileDialog] = useState(false);
@@ -164,6 +166,10 @@ const Home = () => {
           <Button size="sm" onClick={() => { setNewFileFolder(undefined); setNewFileDialog(true); }} className="gap-1.5">
             <Plus className="h-4 w-4" />
             Novo arquivo
+          </Button>
+          <Button size="sm" variant="ghost" onClick={signOut} className="gap-1.5 text-muted-foreground hover:text-destructive">
+            <LogOut className="h-4 w-4" />
+            Sair
           </Button>
         </div>
       </div>
