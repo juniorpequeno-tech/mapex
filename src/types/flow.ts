@@ -13,6 +13,8 @@ export interface CellData {
   fileName?: string;
   columnIndex: number;
   bgColor?: string;
+  fontSize?: number;
+  borderColor?: string;
 }
 
 export interface Label {
