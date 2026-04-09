@@ -26,12 +26,13 @@ interface FlowRowProps {
   onEnter?: () => void;
   cellRefs?: React.MutableRefObject<(HTMLDivElement | null)[]>;
   onSetRowColor?: (color: string | undefined) => void;
+  onSelectCell?: (rowId: string, cellId: string) => void;
 }
 
 export function FlowRowComponent({
   row, labels, columnCount, columnWidths, onUpdateCell, onSetCellType,
   onToggleLabel, onAddLabel, onAddObservation, onAddMessage, onDelete,
-  onFocusCell, onEnter, cellRefs, onSetRowColor,
+  onFocusCell, onEnter, cellRefs, onSetRowColor, onSelectCell,
 }: FlowRowProps) {
   const [newLabelName, setNewLabelName] = useState('');
   const [msgTo, setMsgTo] = useState('');
@@ -55,7 +56,11 @@ export function FlowRowComponent({
   };
 
   return (
-    <div data-flow-row className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors" style={row.bgColor ? { backgroundColor: row.bgColor + '22' } : undefined}>
+    <div data-flow-row className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors" style={{
+      ...(row.bgColor ? { backgroundColor: row.bgColor + '22' } : {}),
+      ...(row.borderColor ? { borderColor: row.borderColor, borderWidth: '2px' } : {}),
+      ...(row.fontSize ? { fontSize: `${row.fontSize}px` } : {}),
+    }}>
       {/* Cells */}
       <div className="flex items-center">
         {row.cells.map((cell, i) => (
@@ -64,12 +69,15 @@ export function FlowRowComponent({
               <ChevronRight className="h-3 w-3 text-muted-foreground/40 shrink-0 mx-0.5" />
             )}
             <div
-              className="px-1 border-r border-border/50 rounded-sm shrink-0"
+              className="px-1 border-r border-border/50 rounded-sm shrink-0 cursor-pointer"
               style={{
                 width: columnWidths?.[i] || 220,
                 ...(cell.bgColor ? { backgroundColor: cell.bgColor + '22' } : {}),
+                ...(cell.borderColor ? { borderColor: cell.borderColor, borderWidth: '2px', borderStyle: 'solid' } : {}),
+                ...(cell.fontSize ? { fontSize: `${cell.fontSize}px` } : {}),
               }}
               ref={el => { if (cellRefs) cellRefs.current[i] = el; }}
+              onClick={() => onSelectCell?.(row.id, cell.id)}
             >
               <FlowCell
                 cell={cell}

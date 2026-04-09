@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useFlowStore } from '@/hooks/useFlowStore';
 import { FlowRowComponent } from '@/components/flow/FlowRow';
 import { TabBar } from '@/components/flow/TabBar';
+import { FormatToolbar } from '@/components/flow/FormatToolbar';
 import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2 } from 'lucide-react';
 import { getFileByIdAsync, saveFileAsync } from '@/lib/fileStorage';
 import { SavedFile } from '@/types/flow';
@@ -24,7 +25,7 @@ const Index = () => {
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    addObservation, addMessage, setRowColor,
+    addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
     loadTabs, undo, canUndo, setColumnWidth,
   } = useFlowStore();
 
@@ -53,6 +54,8 @@ const Index = () => {
   const [editingCol, setEditingCol] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -250,6 +253,45 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Format toolbar */}
+      {canEdit && (() => {
+        const selectedRow = selectedRowId ? data.rows.find(r => r.id === selectedRowId) : null;
+        const selectedCell = selectedRow && selectedCellId ? selectedRow.cells.find(c => c.id === selectedCellId) : null;
+        return (
+          <FormatToolbar
+            disabled={false}
+            currentCellColor={selectedCell?.bgColor}
+            currentRowColor={selectedRow?.bgColor}
+            currentBorder={selectedCell?.borderColor || selectedRow?.borderColor}
+            currentFontSize={selectedCell?.fontSize || selectedRow?.fontSize || 14}
+            onPaintCell={(color) => {
+              if (selectedRowId && selectedCellId) {
+                updateCell(selectedRowId, selectedCellId, { bgColor: color });
+              }
+            }}
+            onPaintRow={(color) => {
+              if (selectedRowId) {
+                setRowColor(selectedRowId, color);
+              }
+            }}
+            onSetBorder={(color) => {
+              if (selectedRowId && selectedCellId) {
+                updateCell(selectedRowId, selectedCellId, { borderColor: color });
+              } else if (selectedRowId) {
+                setRowBorder(selectedRowId, color);
+              }
+            }}
+            onSetFontSize={(size) => {
+              if (selectedRowId && selectedCellId) {
+                updateCell(selectedRowId, selectedCellId, { fontSize: size });
+              } else if (selectedRowId) {
+                setRowFontSize(selectedRowId, size);
+              }
+            }}
+          />
+        );
+      })()}
+
       {/* Read-only banner */}
       {!canEdit && (
         <div className="bg-muted/50 border-b border-border px-4 py-2 text-xs text-muted-foreground flex items-center gap-2">
@@ -344,6 +386,7 @@ const Index = () => {
                     }
                   }}
                   onEnter={canEdit ? handleEnterNewRow : () => {}}
+                  onSelectCell={(rowId, cellId) => { setSelectedRowId(rowId); setSelectedCellId(cellId); }}
                 />
               ))}
             </div>

@@ -13,6 +13,8 @@ export interface CellData {
   fileName?: string;
   columnIndex: number;
   bgColor?: string;
+  fontSize?: number;
+  borderColor?: string;
 }
 
 export interface Label {
@@ -46,6 +48,8 @@ export interface FlowRow {
   observation?: Observation;
   messages: Message[];
   bgColor?: string;
+  fontSize?: number;
+  borderColor?: string;
 }
 
 export interface FlowData {
