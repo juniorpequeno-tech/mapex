@@ -167,6 +167,10 @@ const Home = () => {
             <Plus className="h-4 w-4" />
             Novo arquivo
           </Button>
+          <Button size="sm" variant="ghost" onClick={signOut} className="gap-1.5 text-muted-foreground hover:text-destructive">
+            <LogOut className="h-4 w-4" />
+            Sair
+          </Button>
         </div>
       </div>
 
