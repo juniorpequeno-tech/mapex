@@ -4,7 +4,7 @@ import { useFlowStore } from '@/hooks/useFlowStore';
 import { MemoizedFlowRowComponent as FlowRowComponent } from '@/components/flow/FlowRow';
 import { TabBar } from '@/components/flow/TabBar';
 import { FormatToolbar } from '@/components/flow/FormatToolbar';
-import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2 } from 'lucide-react';
+import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2, Redo2 } from 'lucide-react';
 import { getFileByIdAsync, saveFileAsync } from '@/lib/fileStorage';
 import { SavedFile } from '@/types/flow';
 import { toast } from 'sonner';
@@ -27,7 +27,7 @@ const Index = () => {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
-    updateHeaderStyle, updateColumnHeaderStyle, loadTabs, undo, canUndo, setColumnWidth,
+    updateHeaderStyle, updateColumnHeaderStyle, loadTabs, undo, redo, canUndo, canRedo, setColumnWidth,
   } = useFlowStore();
 
   const columnWidths = data.columnWidths || data.columns.map(() => 220);
@@ -232,21 +232,34 @@ const Index = () => {
             </Button>
           )}
           {canEdit && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5 text-xs"
-              onClick={() => {
-                const success = undo();
-                if (success) toast.success('Ação desfeita!');
-                else toast.info('Nada para desfazer');
-              }}
-              disabled={!canUndo}
-              title="Desfazer (Ctrl+Z)"
-            >
-              <Undo2 className="h-3.5 w-3.5" />
-              Desfazer
-            </Button>
+            <div className="flex items-center gap-0.5">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 w-7 p-0"
+                onClick={() => {
+                  const success = undo();
+                  if (!success) toast.info('Nada para desfazer');
+                }}
+                disabled={!canUndo}
+                title="Desfazer (Ctrl+Z)"
+              >
+                <Undo2 className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 w-7 p-0"
+                onClick={() => {
+                  const success = redo();
+                  if (!success) toast.info('Nada para refazer');
+                }}
+                disabled={!canRedo}
+                title="Refazer (Ctrl+Y)"
+              >
+                <Redo2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           )}
           {canEdit && (
             <button

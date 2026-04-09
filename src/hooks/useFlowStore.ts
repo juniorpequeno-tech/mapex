@@ -330,7 +330,7 @@ export function useFlowStore() {
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
     updateHeaderStyle, updateColumnHeaderStyle, loadTabs,
-    undo, canUndo, setColumnWidth,
+    undo, redo, canUndo, canRedo, setColumnWidth,
   };
 }
 
