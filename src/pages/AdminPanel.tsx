@@ -46,6 +46,7 @@ const roleLabels: Record<AppRole, string> = {
 
 const AdminPanel = () => {
   const { profile, signOut, isMasterAdmin } = useAuth();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [search, setSearch] = useState("");
