@@ -189,6 +189,23 @@ const Index = () => {
             </Button>
           )}
           {canEdit && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-xs"
+              onClick={() => {
+                const success = undo();
+                if (success) toast.success('Ação desfeita!');
+                else toast.info('Nada para desfazer');
+              }}
+              disabled={!canUndo}
+              title="Desfazer (Ctrl+Z)"
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+              Desfazer
+            </Button>
+          )}
+          {canEdit && (
             <button
               onClick={handleSave}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded hover:opacity-90 transition-opacity"
