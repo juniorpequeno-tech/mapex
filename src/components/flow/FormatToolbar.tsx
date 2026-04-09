@@ -27,7 +27,6 @@ interface FormatToolbarProps {
   currentFontSize?: number;
   currentFontColor?: string;
   disabled?: boolean;
-  selectedHeaderCol?: number | null;
 }
 
 function ColorPicker({ colors, onSelect, current }: { colors: string[]; onSelect: (c: string | undefined) => void; current?: string }) {
@@ -54,13 +53,13 @@ function ColorPicker({ colors, onSelect, current }: { colors: string[]; onSelect
 export function FormatToolbar({
   onPaintCell, onPaintRow, onSetBorder, onSetFontSize, onSetFontColor,
   currentCellColor, currentRowColor, currentBorder, currentFontSize = 14, currentFontColor,
-  disabled, selectedHeaderCol,
+  disabled,
 }: FormatToolbarProps) {
   if (disabled) return null;
 
   return (
     <div className="border-b border-border px-4 py-1.5 flex items-center gap-1 bg-muted/30 shrink-0">
-      <span className="text-[10px] text-muted-foreground mr-2 font-medium">Cabeçalho:</span>
+      <span className="text-[10px] text-muted-foreground mr-2 font-medium">Formatar:</span>
 
       {/* Paint Cell */}
       <Popover>

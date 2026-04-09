@@ -53,13 +53,24 @@ const Index = () => {
   const [editingName, setEditingName] = useState(false);
   const [currentFile, setCurrentFile] = useState<SavedFile | null>(null);
   const [editingCol, setEditingCol] = useState<number | null>(null);
-  const [selectedHeaderCol, setSelectedHeaderCol] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
-  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-  const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
+  // Track selected cell via ref to avoid full re-renders
+  const selectedInfoRef = useRef<{ type: 'header' | 'data'; colIndex?: number; rowId?: string; cellId?: string } | null>(null);
+  const selectedElRef = useRef<HTMLElement | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectCell = useCallback((el: HTMLElement | null, info: typeof selectedInfoRef.current) => {
+    if (selectedElRef.current) {
+      selectedElRef.current.classList.remove('ring-2', 'ring-primary', 'ring-inset');
+    }
+    selectedInfoRef.current = info;
+    selectedElRef.current = el;
+    if (el) {
+      el.classList.add('ring-2', 'ring-primary', 'ring-inset');
+    }
+  }, []);
 
   // Determine permission
   const permission = currentFile?.permission || 'owner';
@@ -259,23 +270,28 @@ const Index = () => {
       {canEdit && (
         <FormatToolbar
           disabled={false}
-          currentCellColor={selectedHeaderCol !== null ? data.columnHeaderStyles?.[selectedHeaderCol]?.bgColor : undefined}
+          currentCellColor={undefined}
           currentRowColor={data.headerStyle?.bgColor}
           currentBorder={data.headerStyle?.borderColor}
           currentFontSize={data.headerStyle?.fontSize || 12}
           currentFontColor={data.headerStyle?.fontColor}
           onPaintCell={(color) => {
-            if (selectedHeaderCol !== null) {
-              updateColumnHeaderStyle(selectedHeaderCol, { bgColor: color });
+            const info = selectedInfoRef.current;
+            if (info?.type === 'header' && info.colIndex !== undefined) {
+              updateColumnHeaderStyle(info.colIndex, { bgColor: color });
+              if (selectedElRef.current) {
+                selectedElRef.current.style.backgroundColor = color || '';
+              }
+            } else if (info?.type === 'data' && info.rowId && info.cellId) {
+              updateCell(info.rowId, info.cellId, { bgColor: color });
             } else {
-              toast.info('Clique em uma coluna do cabeçalho primeiro para pintar a célula');
+              toast.info('Clique em uma célula primeiro para pintar');
             }
           }}
           onPaintRow={(color) => updateHeaderStyle({ bgColor: color })}
           onSetBorder={(color) => updateHeaderStyle({ borderColor: color })}
           onSetFontSize={(size) => updateHeaderStyle({ fontSize: size })}
           onSetFontColor={(color) => updateHeaderStyle({ fontColor: color })}
-          selectedHeaderCol={selectedHeaderCol}
         />
       )}
 
@@ -314,17 +330,14 @@ const Index = () => {
                       </div>
                     )}
                     <div
-                      className={cn(
-                        "relative px-2 py-2 border-r border-border/50 shrink-0 cursor-pointer transition-colors",
-                        selectedHeaderCol === i && "ring-2 ring-primary ring-inset"
-                      )}
+                      className="relative px-2 py-2 border-r border-border/50 shrink-0 cursor-pointer transition-colors"
                       style={{
                         width: columnWidths[i],
                         backgroundColor: data.columnHeaderStyles?.[i]?.bgColor || undefined,
                       }}
-                      onClick={() => {
+                      onClick={(e) => {
                         if (canEdit) {
-                          setSelectedHeaderCol(prev => prev === i ? null : i);
+                          selectCell(e.currentTarget, { type: 'header', colIndex: i });
                         }
                       }}
                     >
@@ -405,7 +418,7 @@ const Index = () => {
                     }
                   }}
                   onEnter={canEdit ? handleEnterNewRow : () => {}}
-                  onSelectCell={(rowId, cellId) => { setSelectedRowId(rowId); setSelectedCellId(cellId); }}
+                  onSelectCell={(rowId, cellId, el) => { selectCell(el, { type: 'data', rowId, cellId }); }}
                 />
               ))}
             </div>
