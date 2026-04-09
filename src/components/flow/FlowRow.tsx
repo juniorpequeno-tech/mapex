@@ -239,6 +239,9 @@ export function FlowRowComponent({
               <div className="space-y-2 mb-3 max-h-48 overflow-y-auto">
                 {row.observation!.entries.map(entry => (
                   <div key={entry.id} className="text-xs p-2 rounded-lg bg-accent/50 border border-border/50">
+                    {entry.authorName && (
+                      <p className="font-semibold text-foreground mb-0.5">{entry.authorName}</p>
+                    )}
                     <p className="text-foreground">{entry.text}</p>
                     <p className="text-[10px] text-muted-foreground mt-1">
                       {new Date(entry.createdAt).toLocaleDateString('pt-BR')}
@@ -362,6 +365,9 @@ export function FlowRowComponent({
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {row.observation!.entries.map(entry => (
                 <div key={entry.id} className="text-xs p-2 rounded-lg bg-accent/50 border border-border/50">
+                  {entry.authorName && (
+                    <p className="font-semibold text-foreground mb-0.5">{entry.authorName}</p>
+                  )}
                   <p className="text-foreground">{entry.text}</p>
                   <p className="text-[10px] text-muted-foreground mt-1">
                     {new Date(entry.createdAt).toLocaleDateString('pt-BR')}
