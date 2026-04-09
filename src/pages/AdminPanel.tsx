@@ -137,6 +137,9 @@ const AdminPanel = () => {
     <div className="min-h-screen bg-muted/30">
       <header className="bg-card border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title="Voltar">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <Users className="h-6 w-6 text-primary" />
           <div>
             <h1 className="text-lg font-bold">Painel de Administração</h1>
