@@ -5,7 +5,7 @@ import { getSavedFiles, deleteFile, createNewFile, saveFile, getFolders, createF
 import { SavedFile, Folder } from '@/types/flow';
 import {
   Plus, FileText, Trash2, FolderOpen, GitBranch, Search,
-  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut, Shield,
+  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut, Shield, User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 type SortMode = 'updated' | 'created' | 'name';
 
 const Home = () => {
-  const { signOut, isAdmin } = useAuth();
+  const { signOut, isAdmin, profile, user } = useAuth();
   const [files, setFiles] = useState<SavedFile[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [newFileDialog, setNewFileDialog] = useState(false);
@@ -158,7 +158,14 @@ const Home = () => {
           <GitBranch className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-bold">Mapex</h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground border-r border-border pr-3">
+            <User className="h-4 w-4" />
+            <div className="flex flex-col">
+              <span className="font-medium text-foreground text-xs">{profile?.full_name || user?.email}</span>
+              <span className="text-[10px]">{profile?.role === 'administrador_master' ? 'Admin Master' : profile?.role === 'administrador_secundario' ? 'Admin' : 'Usuário'}</span>
+            </div>
+          </div>
           {isAdmin && (
             <Button size="sm" variant="outline" onClick={() => navigate('/admin')} className="gap-1.5">
               <Shield className="h-4 w-4" />
