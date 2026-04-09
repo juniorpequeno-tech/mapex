@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import ShareDialog from '@/components/ShareDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import { AutofillHandle } from '@/components/flow/AutofillHandle';
 
 const Index = () => {
   const { fileId } = useParams<{ fileId: string }>();
@@ -80,13 +81,37 @@ const Index = () => {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; colIndex: number } | null>(null);
   const selectedInfoRef = useRef<{ type: 'header' | 'data'; colIndex?: number; rowId?: string; cellId?: string } | null>(null);
   const selectedElRef = useRef<HTMLElement | null>(null);
+  const [activeCell, setActiveCell] = useState<{ rowId: string; colIndex: number; el: HTMLElement } | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
+  const gridWrapperRef = useRef<HTMLDivElement>(null);
 
   const selectCell = useCallback((el: HTMLElement | null, info: typeof selectedInfoRef.current) => {
     selectedInfoRef.current = info;
     selectedElRef.current = el;
+    if (info?.type === 'data' && info.rowId && info.colIndex !== undefined) {
+      setActiveCell({ rowId: info.rowId, colIndex: info.colIndex, el: el! });
+    } else {
+      setActiveCell(null);
+    }
   }, []);
+
+  const handleAutofill = useCallback((count: number) => {
+    if (!activeCell || !canEdit) return;
+    const rowIndex = data.rows.findIndex(r => r.id === activeCell.rowId);
+    if (rowIndex === -1) return;
+    const sourceCell = data.rows[rowIndex].cells[activeCell.colIndex];
+    if (!sourceCell) return;
+    for (let i = 1; i <= count; i++) {
+      const targetRow = data.rows[rowIndex + i];
+      if (targetRow) {
+        const targetCell = targetRow.cells[activeCell.colIndex];
+        if (targetCell) {
+          updateCell(targetRow.id, targetCell.id, { value: sourceCell.value });
+        }
+      }
+    }
+  }, [activeCell, canEdit, data.rows, updateCell]);
 
   // Determine permission
   const permission = currentFile?.permission || 'owner';
