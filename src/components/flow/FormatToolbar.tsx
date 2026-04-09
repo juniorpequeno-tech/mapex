@@ -51,8 +51,8 @@ function ColorPicker({ colors, onSelect, current }: { colors: string[]; onSelect
 }
 
 export function FormatToolbar({
-  onPaintCell, onPaintRow, onSetBorder, onSetFontSize,
-  currentCellColor, currentRowColor, currentBorder, currentFontSize = 14,
+  onPaintCell, onPaintRow, onSetBorder, onSetFontSize, onSetFontColor,
+  currentCellColor, currentRowColor, currentBorder, currentFontSize = 14, currentFontColor,
   disabled,
 }: FormatToolbarProps) {
   if (disabled) return null;
