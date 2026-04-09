@@ -52,11 +52,18 @@ export interface FlowRow {
   borderColor?: string;
 }
 
+export interface HeaderStyle {
+  bgColor?: string;
+  fontSize?: number;
+  borderColor?: string;
+}
+
 export interface FlowData {
   columns: string[];
   columnWidths?: number[];
   rows: FlowRow[];
   labels: Label[];
+  headerStyle?: HeaderStyle;
 }
 
 export interface FlowTab {
