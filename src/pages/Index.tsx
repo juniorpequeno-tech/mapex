@@ -270,23 +270,28 @@ const Index = () => {
       {canEdit && (
         <FormatToolbar
           disabled={false}
-          currentCellColor={selectedHeaderCol !== null ? data.columnHeaderStyles?.[selectedHeaderCol]?.bgColor : undefined}
+          currentCellColor={undefined}
           currentRowColor={data.headerStyle?.bgColor}
           currentBorder={data.headerStyle?.borderColor}
           currentFontSize={data.headerStyle?.fontSize || 12}
           currentFontColor={data.headerStyle?.fontColor}
           onPaintCell={(color) => {
-            if (selectedHeaderCol !== null) {
-              updateColumnHeaderStyle(selectedHeaderCol, { bgColor: color });
+            const info = selectedInfoRef.current;
+            if (info?.type === 'header' && info.colIndex !== undefined) {
+              updateColumnHeaderStyle(info.colIndex, { bgColor: color });
+              if (selectedElRef.current) {
+                selectedElRef.current.style.backgroundColor = color || '';
+              }
+            } else if (info?.type === 'data' && info.rowId && info.cellId) {
+              updateCell(info.rowId, info.cellId, { bgColor: color });
             } else {
-              toast.info('Clique em uma coluna do cabeçalho primeiro para pintar a célula');
+              toast.info('Clique em uma célula primeiro para pintar');
             }
           }}
           onPaintRow={(color) => updateHeaderStyle({ bgColor: color })}
           onSetBorder={(color) => updateHeaderStyle({ borderColor: color })}
           onSetFontSize={(size) => updateHeaderStyle({ fontSize: size })}
           onSetFontColor={(color) => updateHeaderStyle({ fontColor: color })}
-          selectedHeaderCol={selectedHeaderCol}
         />
       )}
 
