@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 type SortMode = 'updated' | 'created' | 'name';
 
 const Home = () => {
-  const { signOut, isAdmin } = useAuth();
+  const { signOut, isAdmin, profile, user } = useAuth();
   const [files, setFiles] = useState<SavedFile[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [newFileDialog, setNewFileDialog] = useState(false);
