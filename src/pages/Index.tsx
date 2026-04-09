@@ -347,6 +347,12 @@ const Index = () => {
                           selectCell(e.currentTarget, { type: 'header', colIndex: i });
                         }
                       }}
+                      onContextMenu={(e) => {
+                        if (canEdit && data.columns.length > 1) {
+                          e.preventDefault();
+                          setContextMenu({ x: e.clientX, y: e.clientY, colIndex: i });
+                        }
+                      }}
                     >
                       {editingCol === i && canEdit ? (
                         <input
