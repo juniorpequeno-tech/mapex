@@ -14,6 +14,7 @@ interface FlowRowProps {
   row: FlowRowType;
   labels: Label[];
   columnCount: number;
+  columnWidths?: number[];
   onUpdateCell: (cellId: string, updates: Partial<CellData>) => void;
   onSetCellType: (cellId: string, type: CellType) => void;
   onToggleLabel: (labelId: string) => void;
@@ -28,7 +29,7 @@ interface FlowRowProps {
 }
 
 export function FlowRowComponent({
-  row, labels, columnCount, onUpdateCell, onSetCellType,
+  row, labels, columnCount, columnWidths, onUpdateCell, onSetCellType,
   onToggleLabel, onAddLabel, onAddObservation, onAddMessage, onDelete,
   onFocusCell, onEnter, cellRefs, onSetRowColor,
 }: FlowRowProps) {
@@ -56,15 +57,18 @@ export function FlowRowComponent({
   return (
     <div data-flow-row className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors" style={row.bgColor ? { backgroundColor: row.bgColor + '22' } : undefined}>
       {/* Cells */}
-      <div className="flex flex-1 items-center">
+      <div className="flex items-center">
         {row.cells.map((cell, i) => (
           <React.Fragment key={cell.id}>
             {i > 0 && (
               <ChevronRight className="h-3 w-3 text-muted-foreground/40 shrink-0 mx-0.5" />
             )}
             <div
-              className="flex-1 min-w-[180px] px-1 border-r border-border/50 rounded-sm"
-              style={cell.bgColor ? { backgroundColor: cell.bgColor + '22' } : undefined}
+              className="px-1 border-r border-border/50 rounded-sm shrink-0"
+              style={{
+                width: columnWidths?.[i] || 220,
+                ...(cell.bgColor ? { backgroundColor: cell.bgColor + '22' } : {}),
+              }}
               ref={el => { if (cellRefs) cellRefs.current[i] = el; }}
             >
               <FlowCell

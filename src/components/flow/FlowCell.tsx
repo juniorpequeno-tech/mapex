@@ -81,7 +81,7 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetR
   );
 
   return (
-    <div className="flex items-center gap-1 h-8 min-w-[180px] group/cell">
+    <div className="flex items-center gap-1 min-h-[32px] min-w-0 group/cell">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="flex items-center justify-center h-6 w-6 rounded hover:bg-accent text-muted-foreground shrink-0 opacity-0 group-hover/cell:opacity-100 transition-opacity">
@@ -172,7 +172,7 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetR
               </PopoverContent>
             </Popover>
             <Select value={cell.value} onValueChange={v => onUpdate({ value: v })}>
-              <SelectTrigger className="h-7 border-0 border-b border-transparent hover:border-border text-sm shadow-none px-2">
+              <SelectTrigger className="h-7 border-0 border-b border-transparent hover:border-border text-sm shadow-none px-2 [&>span]:truncate [&>span]:block [&>span]:text-left [&>span]:whitespace-normal [&>span]:line-clamp-2">
                 <SelectValue placeholder="Selecione..." />
               </SelectTrigger>
               <SelectContent>
