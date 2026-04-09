@@ -414,6 +414,8 @@ const Index = () => {
                   onSetCellType={canEdit ? (cellId, type) => setCellType(row.id, cellId, type) : () => {}}
                   onToggleLabel={canEdit ? labelId => toggleLabel(row.id, labelId) : () => {}}
                   onAddLabel={canEdit ? addLabel : () => {}}
+                  onEditLabel={canEdit ? (id, updates) => editLabel(id, updates) : () => {}}
+                  onDeleteLabel={canEdit ? (id) => deleteLabel(id) : () => {}}
                   onAddObservation={canComment ? text => addObservation(row.id, text) : () => {}}
                   onAddMessage={canComment ? (to, text) => addMessage(row.id, to, text) : () => {}}
                   onDelete={canEdit ? () => deleteRow(row.id) : () => {}}
