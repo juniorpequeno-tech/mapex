@@ -159,6 +159,12 @@ const Home = () => {
           <h1 className="text-xl font-bold">Mapex</h1>
         </div>
         <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Button size="sm" variant="outline" onClick={() => navigate('/admin')} className="gap-1.5">
+              <Shield className="h-4 w-4" />
+              Painel Admin
+            </Button>
+          )}
           <Button size="sm" variant="outline" onClick={() => setNewFolderDialog(true)} className="gap-1.5">
             <FolderPlus className="h-4 w-4" />
             Nova pasta
