@@ -55,8 +55,8 @@ const Index = () => {
   const [editingCol, setEditingCol] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
-  // Use refs for selection to avoid re-rendering the entire tree on every click
-  const selectedCellElRef = useRef<HTMLElement | null>(null);
+  // Track selected cell via ref to avoid full re-renders
+  const selectedInfoRef = useRef<{ type: 'header' | 'data'; colIndex?: number; rowId?: string; cellId?: string } | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
 
