@@ -278,20 +278,14 @@ const Index = () => {
               if (selectedRowId && selectedCellId) {
                 updateCell(selectedRowId, selectedCellId, { borderColor: color });
               } else if (selectedRowId) {
-                updateTabData(prev => ({
-                  ...prev,
-                  rows: prev.rows.map(r => r.id === selectedRowId ? { ...r, borderColor: color } : r),
-                }));
+                setRowBorder(selectedRowId, color);
               }
             }}
             onSetFontSize={(size) => {
               if (selectedRowId && selectedCellId) {
                 updateCell(selectedRowId, selectedCellId, { fontSize: size });
               } else if (selectedRowId) {
-                updateTabData(prev => ({
-                  ...prev,
-                  rows: prev.rows.map(r => r.id === selectedRowId ? { ...r, fontSize: size } : r),
-                }));
+                setRowFontSize(selectedRowId, size);
               }
             }}
           />
