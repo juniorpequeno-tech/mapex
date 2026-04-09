@@ -26,7 +26,7 @@ const Index = () => {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
-    updateHeaderStyle, loadTabs, undo, canUndo, setColumnWidth,
+    updateHeaderStyle, updateColumnHeaderStyle, loadTabs, undo, canUndo, setColumnWidth,
   } = useFlowStore();
 
   const columnWidths = data.columnWidths || data.columns.map(() => 220);
@@ -52,6 +52,7 @@ const Index = () => {
   const [editingName, setEditingName] = useState(false);
   const [currentFile, setCurrentFile] = useState<SavedFile | null>(null);
   const [editingCol, setEditingCol] = useState<number | null>(null);
+  const [selectedHeaderCol, setSelectedHeaderCol] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
@@ -257,16 +258,23 @@ const Index = () => {
       {canEdit && (
         <FormatToolbar
           disabled={false}
-          currentCellColor={data.headerStyle?.bgColor}
+          currentCellColor={selectedHeaderCol !== null ? data.columnHeaderStyles?.[selectedHeaderCol]?.bgColor : undefined}
           currentRowColor={data.headerStyle?.bgColor}
           currentBorder={data.headerStyle?.borderColor}
           currentFontSize={data.headerStyle?.fontSize || 12}
           currentFontColor={data.headerStyle?.fontColor}
-          onPaintCell={(color) => updateHeaderStyle({ bgColor: color })}
+          onPaintCell={(color) => {
+            if (selectedHeaderCol !== null) {
+              updateColumnHeaderStyle(selectedHeaderCol, { bgColor: color });
+            } else {
+              toast.info('Clique em uma coluna do cabeçalho primeiro para pintar a célula');
+            }
+          }}
           onPaintRow={(color) => updateHeaderStyle({ bgColor: color })}
           onSetBorder={(color) => updateHeaderStyle({ borderColor: color })}
           onSetFontSize={(size) => updateHeaderStyle({ fontSize: size })}
           onSetFontColor={(color) => updateHeaderStyle({ fontColor: color })}
+          selectedHeaderCol={selectedHeaderCol}
         />
       )}
 
