@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { getSavedFiles, deleteFile, createNewFile, saveFile, getFolders, createFolder, deleteFolder, moveFileToFolder } from '@/lib/fileStorage';
 import { SavedFile, Folder } from '@/types/flow';
 import {
   Plus, FileText, Trash2, FolderOpen, GitBranch, Search,
-  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical,
+  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
