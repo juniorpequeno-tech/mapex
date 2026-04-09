@@ -145,11 +145,20 @@ export function useFlowStore() {
       return {
         ...prev,
         columns: [...prev.columns, `Etapa ${newColIndex + 1}`],
+        columnWidths: [...(prev.columnWidths || prev.columns.map(() => 220)), 220],
         rows: prev.rows.map(row => ({
           ...row,
           cells: [...row.cells, createEmptyCell(newColIndex)],
         })),
       };
+    });
+  }, [updateTabData]);
+
+  const setColumnWidth = useCallback((index: number, width: number) => {
+    updateTabData(prev => {
+      const widths = [...(prev.columnWidths || prev.columns.map(() => 220))];
+      widths[index] = Math.max(100, width);
+      return { ...prev, columnWidths: widths };
     });
   }, [updateTabData]);
 
