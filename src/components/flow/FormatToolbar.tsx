@@ -121,6 +121,23 @@ export function FormatToolbar({
         </PopoverContent>
       </Popover>
 
+      {/* Font Color */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className="h-7 px-2 rounded hover:bg-accent flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            title="Cor da fonte"
+          >
+            <span className="font-bold text-sm" style={currentFontColor ? { color: currentFontColor } : undefined}>A</span>
+            <span className="hidden sm:inline">Fonte</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <p className="text-xs font-medium text-muted-foreground px-2 pt-2">Cor da fonte</p>
+          <ColorPicker colors={COLORS} onSelect={onSetFontColor} current={currentFontColor} />
+        </PopoverContent>
+      </Popover>
+
       {/* Font Size */}
       <div className="h-5 w-px bg-border mx-1" />
       <Popover>
