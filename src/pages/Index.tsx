@@ -4,7 +4,7 @@ import { useFlowStore } from '@/hooks/useFlowStore';
 import { MemoizedFlowRowComponent as FlowRowComponent } from '@/components/flow/FlowRow';
 import { TabBar } from '@/components/flow/TabBar';
 import { FormatToolbar } from '@/components/flow/FormatToolbar';
-import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2, Redo2 } from 'lucide-react';
+import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2, Redo2, Trash2 } from 'lucide-react';
 import { getFileByIdAsync, saveFileAsync } from '@/lib/fileStorage';
 import { SavedFile } from '@/types/flow';
 import { toast } from 'sonner';
@@ -24,7 +24,7 @@ const Index = () => {
     tabs, activeTabId, activeTab, data,
     setActiveTabId, addTab, removeTab, renameTab, setTabColor,
     protectTab, unlockTab, removeProtection,
-    updateColumnTitle, addColumn, addRow, deleteRow,
+    updateColumnTitle, addColumn, deleteColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel, editLabel, deleteLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
     updateHeaderStyle, updateColumnHeaderStyle, loadTabs, undo, redo, canUndo, canRedo, setColumnWidth,
@@ -55,7 +55,7 @@ const Index = () => {
   const [editingCol, setEditingCol] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
-  // Track selected cell via ref to avoid full re-renders
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; colIndex: number } | null>(null);
   const selectedInfoRef = useRef<{ type: 'header' | 'data'; colIndex?: number; rowId?: string; cellId?: string } | null>(null);
   const selectedElRef = useRef<HTMLElement | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
@@ -347,6 +347,12 @@ const Index = () => {
                           selectCell(e.currentTarget, { type: 'header', colIndex: i });
                         }
                       }}
+                      onContextMenu={(e) => {
+                        if (canEdit && data.columns.length > 1) {
+                          e.preventDefault();
+                          setContextMenu({ x: e.clientX, y: e.clientY, colIndex: i });
+                        }
+                      }}
                     >
                       {editingCol === i && canEdit ? (
                         <input
@@ -468,6 +474,32 @@ const Index = () => {
           fileName={fileName}
           ownerId={currentFile.ownerId || ''}
         />
+      )}
+
+      {/* Column context menu */}
+      {contextMenu && (
+        <div
+          className="fixed inset-0 z-50"
+          onClick={() => setContextMenu(null)}
+          onContextMenu={e => { e.preventDefault(); setContextMenu(null); }}
+        >
+          <div
+            className="absolute bg-popover border border-border rounded-md shadow-md py-1 min-w-[160px]"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-accent transition-colors text-destructive"
+              onClick={() => {
+                deleteColumn(contextMenu.colIndex);
+                setContextMenu(null);
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Excluir coluna
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
