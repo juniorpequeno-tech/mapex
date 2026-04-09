@@ -191,6 +191,31 @@ export function useFlowStore() {
     });
   }, [updateTabData]);
 
+  const deleteColumn = useCallback((index: number) => {
+    updateTabData(prev => {
+      if (prev.columns.length <= 1) return prev;
+      const columns = prev.columns.filter((_, i) => i !== index);
+      const widths = (prev.columnWidths || prev.columns.map(() => 220)).filter((_, i) => i !== index);
+      const oldStyles = prev.columnHeaderStyles || {};
+      const newStyles: Record<number, ColumnHeaderStyle> = {};
+      Object.entries(oldStyles).forEach(([k, v]) => {
+        const ki = Number(k);
+        if (ki < index) newStyles[ki] = v;
+        else if (ki > index) newStyles[ki - 1] = v;
+      });
+      return {
+        ...prev,
+        columns,
+        columnWidths: widths,
+        columnHeaderStyles: newStyles,
+        rows: prev.rows.map(row => ({
+          ...row,
+          cells: row.cells.filter((_, i) => i !== index).map((c, i) => ({ ...c, columnIndex: i })),
+        })),
+      };
+    });
+  }, [updateTabData]);
+
   const setColumnWidth = useCallback((index: number, width: number) => {
     updateTabData(prev => {
       const widths = [...(prev.columnWidths || prev.columns.map(() => 220))];
