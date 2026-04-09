@@ -48,6 +48,8 @@ export interface FlowRow {
   observation?: Observation;
   messages: Message[];
   bgColor?: string;
+  fontSize?: number;
+  borderColor?: string;
 }
 
 export interface FlowData {
