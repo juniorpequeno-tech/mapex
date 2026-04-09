@@ -239,3 +239,5 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetR
     </div>
   );
 }
+
+export const MemoizedFlowCell = React.memo(FlowCell);

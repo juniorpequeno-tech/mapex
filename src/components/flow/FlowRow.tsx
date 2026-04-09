@@ -357,3 +357,4 @@ export function FlowRowComponent({
   );
 }
 
+export const MemoizedFlowRowComponent = React.memo(FlowRowComponent);
