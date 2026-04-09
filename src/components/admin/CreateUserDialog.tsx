@@ -34,8 +34,22 @@ const CreateUserDialog = ({ open, onOpenChange, onSuccess, isMasterAdmin }: Crea
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const copyToClipboard = async (text: string, field: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+    toast({ title: "Copiado!", description: `${field} copiado para a área de transferência.` });
+  };
+
+  const copyAll = () => {
+    if (!generatedPassword) return;
+    const text = `Usuário: ${email}\nSenha: ${generatedPassword}`;
+    copyToClipboard(text, "all");
+  };
 
   const resetForm = () => {
     setFullName("");
