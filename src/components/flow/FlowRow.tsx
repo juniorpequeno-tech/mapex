@@ -72,6 +72,8 @@ export function FlowRowComponent({
               style={{
                 width: columnWidths?.[i] || 220,
                 ...(cell.bgColor ? { backgroundColor: cell.bgColor + '22' } : {}),
+                ...(cell.borderColor ? { borderColor: cell.borderColor, borderWidth: '2px', borderStyle: 'solid' } : {}),
+                ...(cell.fontSize ? { fontSize: `${cell.fontSize}px` } : {}),
               }}
               ref={el => { if (cellRefs) cellRefs.current[i] = el; }}
             >
