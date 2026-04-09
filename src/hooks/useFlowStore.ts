@@ -251,6 +251,7 @@ export function useFlowStore() {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor, loadTabs,
+    undo, canUndo,
   };
 }
 
