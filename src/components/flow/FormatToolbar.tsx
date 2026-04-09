@@ -59,7 +59,7 @@ export function FormatToolbar({
 
   return (
     <div className="border-b border-border px-4 py-1.5 flex items-center gap-1 bg-muted/30 shrink-0">
-      <span className="text-[10px] text-muted-foreground mr-2 font-medium">Cabeçalho:</span>
+      <span className="text-[10px] text-muted-foreground mr-2 font-medium">Formatar:</span>
 
       {/* Paint Cell */}
       <Popover>
