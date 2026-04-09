@@ -52,6 +52,7 @@ export function useFlowStore() {
   ]);
   const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
   const historyRef = useRef<FlowTab[][]>([]);
+  const redoRef = useRef<FlowTab[][]>([]);
   const historyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSnapshotRef = useRef<FlowTab[] | null>(null);
   const MAX_HISTORY = 50;
@@ -67,20 +68,22 @@ export function useFlowStore() {
   }, []);
 
   const pushHistory = useCallback((currentTabs: FlowTab[]) => {
-    // Only snapshot if no pending snapshot (debounce rapid changes)
     if (!pendingSnapshotRef.current) {
       pendingSnapshotRef.current = structuredClone(currentTabs);
     }
     if (historyTimerRef.current) clearTimeout(historyTimerRef.current);
     historyTimerRef.current = setTimeout(flushHistory, 500);
+    redoRef.current = [];
   }, [flushHistory]);
 
   const undo = useCallback(() => {
-    // Flush any pending snapshot first
     flushHistory();
     if (historyRef.current.length === 0) return false;
     const previous = historyRef.current.pop()!;
-    setTabs(previous);
+    setTabs(current => {
+      redoRef.current = [...redoRef.current.slice(-MAX_HISTORY + 1), structuredClone(current)];
+      return previous;
+    });
     const prevActive = previous.find(t => t.id === activeTabId);
     if (!prevActive && previous.length > 0) {
       setActiveTabId(previous[0].id);
@@ -88,7 +91,22 @@ export function useFlowStore() {
     return true;
   }, [activeTabId, flushHistory]);
 
+  const redo = useCallback(() => {
+    if (redoRef.current.length === 0) return false;
+    const next = redoRef.current.pop()!;
+    setTabs(current => {
+      historyRef.current = [...historyRef.current.slice(-MAX_HISTORY + 1), structuredClone(current)];
+      return next;
+    });
+    const nextActive = next.find(t => t.id === activeTabId);
+    if (!nextActive && next.length > 0) {
+      setActiveTabId(next[0].id);
+    }
+    return true;
+  }, [activeTabId]);
+
   const canUndo = historyRef.current.length > 0 || pendingSnapshotRef.current !== null;
+  const canRedo = redoRef.current.length > 0;
 
   const updateTabData = useCallback((updater: (prev: FlowData) => FlowData) => {
     setTabs(prev => {
@@ -312,7 +330,7 @@ export function useFlowStore() {
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
     updateHeaderStyle, updateColumnHeaderStyle, loadTabs,
-    undo, canUndo, setColumnWidth,
+    undo, redo, canUndo, canRedo, setColumnWidth,
   };
 }
 
