@@ -47,18 +47,34 @@ export async function getSavedFilesAsync(userId: string): Promise<SavedFile[]> {
 }
 
 export async function saveFileAsync(file: SavedFile): Promise<void> {
-  const { error } = await supabase
-    .from('files')
-    .upsert({
-      id: file.id,
-      name: file.name,
-      content: file.tabs as any,
-      folder_id: file.folderId || null,
-      owner_id: file.ownerId!,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'id' });
+  // For shared files (not owner), only update content and name
+  const { data: { user } } = await supabase.auth.getUser();
+  const isOwner = user && file.ownerId === user.id;
 
-  if (error) throw error;
+  if (isOwner) {
+    const { error } = await supabase
+      .from('files')
+      .upsert({
+        id: file.id,
+        name: file.name,
+        content: file.tabs as any,
+        folder_id: file.folderId || null,
+        owner_id: file.ownerId!,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'id' });
+    if (error) throw error;
+  } else {
+    // Editor: only update content and name (no owner_id change)
+    const { error } = await supabase
+      .from('files')
+      .update({
+        name: file.name,
+        content: file.tabs as any,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', file.id);
+    if (error) throw error;
+  }
 }
 
 export async function createNewFileAsync(name: string, tabs: FlowTab[], userId: string, folderId?: string): Promise<SavedFile> {
