@@ -53,12 +53,10 @@ const Index = () => {
   const [editingName, setEditingName] = useState(false);
   const [currentFile, setCurrentFile] = useState<SavedFile | null>(null);
   const [editingCol, setEditingCol] = useState<number | null>(null);
-  const [selectedHeaderCol, setSelectedHeaderCol] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
-  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-  const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
-  const selectedCellRef = useRef<{ rowId: string | null; cellId: string | null }>({ rowId: null, cellId: null });
+  // Use refs for selection to avoid re-rendering the entire tree on every click
+  const selectedCellElRef = useRef<HTMLElement | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
 
