@@ -268,7 +268,7 @@ const Index = () => {
           <div className="min-w-fit">
             {/* Column headers */}
             <div className="flex border-b-2 border-border bg-muted/50 sticky top-0 z-10">
-              <div className="flex flex-1">
+              <div className="flex">
                 {data.columns.map((col, i) => (
                   <React.Fragment key={i}>
                     {i > 0 && (
@@ -276,7 +276,10 @@ const Index = () => {
                         <ChevronRight className="h-3 w-3 text-muted-foreground/40" />
                       </div>
                     )}
-                    <div className="flex-1 min-w-[180px] px-2 py-2 border-r border-border/50">
+                    <div
+                      className="relative px-2 py-2 border-r border-border/50 shrink-0"
+                      style={{ width: columnWidths[i] }}
+                    >
                       {editingCol === i && canEdit ? (
                         <input
                           className="w-full h-6 px-1 text-xs font-medium bg-background border border-primary rounded focus:outline-none"
@@ -293,6 +296,13 @@ const Index = () => {
                         >
                           {col}
                         </button>
+                      )}
+                      {/* Resize handle */}
+                      {canEdit && (
+                        <div
+                          className="absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:bg-primary/40 transition-colors z-20"
+                          onMouseDown={e => handleColumnResize(i, e.clientX, columnWidths[i])}
+                        />
                       )}
                     </div>
                   </React.Fragment>
