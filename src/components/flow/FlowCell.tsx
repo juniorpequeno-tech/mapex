@@ -6,7 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Type, List, CalendarIcon, Paperclip, Plus, X, Palette, FileText, MessageSquare } from 'lucide-react';
+import { Type, List, CalendarIcon, Paperclip, Plus, X, Palette, FileText, MessageSquare, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,7 @@ const typeIcons: Record<CellType, React.ReactNode> = {
   dropdown: <List className="h-3 w-3" />,
   date: <CalendarIcon className="h-3 w-3" />,
   file: <Paperclip className="h-3 w-3" />,
+  phone: <Phone className="h-3 w-3" />,
 };
 
 const typeLabels: Record<CellType, string> = {
@@ -39,6 +40,7 @@ const typeLabels: Record<CellType, string> = {
   dropdown: 'Lista',
   date: 'Data',
   file: 'Anexo',
+  phone: 'Telefone',
 };
 
 export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetRowColor, onOpenObservations, onOpenMessages }: FlowCellProps) {
@@ -205,6 +207,35 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetR
               />
             </PopoverContent>
           </Popover>
+        )}
+
+        {cell.type === 'phone' && (
+          <div className="flex items-center gap-1 h-7">
+            <Phone className="h-3 w-3 text-muted-foreground shrink-0 ml-1" />
+            <input
+              className="w-full h-7 px-2 text-sm bg-transparent border-0 border-b border-transparent hover:border-border focus:border-primary focus:outline-none transition-colors"
+              value={cell.value}
+              onChange={e => {
+                const v = e.target.value.replace(/[^0-9()\-+\s]/g, '');
+                onUpdate({ value: v });
+              }}
+              placeholder="(00) 00000-0000"
+              inputMode="tel"
+              onKeyDown={e => {
+                if (e.key === 'Tab') { e.preventDefault(); onTabNext?.(); }
+                else if (e.key === 'Enter') { e.preventDefault(); onEnter?.(); }
+              }}
+            />
+            {cell.value && (
+              <a
+                href={`tel:${cell.value.replace(/\D/g, '')}`}
+                className="h-5 w-5 rounded hover:bg-accent text-muted-foreground hover:text-primary flex items-center justify-center shrink-0"
+                title="Ligar"
+              >
+                <Phone className="h-3 w-3" />
+              </a>
+            )}
+          </div>
         )}
 
         {cell.type === 'file' && (

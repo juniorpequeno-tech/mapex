@@ -1,4 +1,4 @@
-export type CellType = 'text' | 'dropdown' | 'date' | 'file';
+export type CellType = 'text' | 'dropdown' | 'date' | 'file' | 'phone';
 
 export interface DropdownOption {
   id: string;
