@@ -64,35 +64,21 @@ const CreateUserDialog = ({ open, onOpenChange, onSuccess, isMasterAdmin }: Crea
 
     setIsLoading(true);
 
-    // Create user via Supabase Auth admin (we use signUp since we don't have admin API on client)
-    // The trigger will auto-create the profile
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password: finalPassword,
-      options: {
-        data: {
-          full_name: fullName,
-          role: role,
-        },
+    // Use edge function for secure server-side user creation
+    const { data, error } = await supabase.functions.invoke("create-user", {
+      body: {
+        email,
+        password: finalPassword,
+        full_name: fullName,
+        username: username || null,
+        role,
       },
     });
 
-    if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    if (error || data?.error) {
+      toast({ title: "Erro", description: data?.error || error?.message || "Erro ao criar usuário", variant: "destructive" });
       setIsLoading(false);
       return;
-    }
-
-    // Update profile with extra data
-    if (data.user) {
-      await supabase
-        .from("profiles")
-        .update({
-          username: username || null,
-          role: role as any,
-          status: "ativo",
-        })
-        .eq("user_id", data.user.id);
     }
 
     setIsLoading(false);

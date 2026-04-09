@@ -127,8 +127,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: null };
   };
 
-  const isAdmin = profile?.role === "administrador_master" || profile?.role === "administrador_secundario";
-  const isMasterAdmin = profile?.role === "administrador_master";
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isMasterAdmin, setIsMasterAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkRoles = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        setIsMasterAdmin(false);
+        return;
+      }
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id);
+      
+      if (roles && roles.length > 0) {
+        const roleNames = roles.map(r => r.role);
+        setIsAdmin(roleNames.includes("administrador_master") || roleNames.includes("administrador_secundario"));
+        setIsMasterAdmin(roleNames.includes("administrador_master"));
+      } else {
+        setIsAdmin(false);
+        setIsMasterAdmin(false);
+      }
+    };
+    checkRoles();
+  }, [user]);
 
   return (
     <AuthContext.Provider
