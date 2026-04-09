@@ -116,16 +116,41 @@ const CreateUserDialog = ({ open, onOpenChange, onSuccess, isMasterAdmin }: Crea
         {generatedPassword ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Usuário criado! Anote a senha gerada (ela não será mostrada novamente):
+              Usuário criado! Copie as credenciais abaixo para enviar ao usuário:
             </p>
-            <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
-              <code className="flex-1 text-sm font-mono break-all">{generatedPassword}</code>
-              <Button variant="ghost" size="icon" onClick={copyPassword}>
-                <Copy className="h-4 w-4" />
-              </Button>
+
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">E-mail / Usuário</Label>
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+                  <code className="flex-1 text-sm font-mono break-all">{email}</code>
+                  <Button variant="ghost" size="icon" onClick={() => copyToClipboard(email, "E-mail")}>
+                    {copiedField === "E-mail" ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Senha</Label>
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+                  <code className="flex-1 text-sm font-mono break-all">{generatedPassword}</code>
+                  <Button variant="ghost" size="icon" onClick={() => copyToClipboard(generatedPassword, "Senha")}>
+                    {copiedField === "Senha" ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              💡 No futuro, essa senha poderá ser enviada automaticamente por e-mail.
+
+            <Button onClick={copyAll} variant="outline" className="w-full">
+              {copiedField === "all" ? (
+                <><Check className="h-4 w-4 mr-2 text-primary" /> Credenciais Copiadas!</>
+              ) : (
+                <><Copy className="h-4 w-4 mr-2" /> Copiar Tudo</>
+              )}
+            </Button>
+
+            <p className="text-xs text-muted-foreground text-center">
+              ⚠️ A senha não será mostrada novamente. Anote antes de fechar.
             </p>
             <Button onClick={handleClose} className="w-full">Fechar</Button>
           </div>
