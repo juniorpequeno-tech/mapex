@@ -25,7 +25,7 @@ const Index = () => {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor,
-    loadTabs,
+    loadTabs, undo, canUndo,
   } = useFlowStore();
 
   const [fileName, setFileName] = useState('Sem título');
