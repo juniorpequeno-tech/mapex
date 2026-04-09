@@ -62,14 +62,8 @@ const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const selectCell = useCallback((el: HTMLElement | null, info: typeof selectedInfoRef.current) => {
-    if (selectedElRef.current) {
-      selectedElRef.current.classList.remove('ring-2', 'ring-primary', 'ring-inset');
-    }
     selectedInfoRef.current = info;
     selectedElRef.current = el;
-    if (el) {
-      el.classList.add('ring-2', 'ring-primary', 'ring-inset');
-    }
   }, []);
 
   // Determine permission
