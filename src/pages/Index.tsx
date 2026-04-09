@@ -58,6 +58,7 @@ const Index = () => {
   const [fileLoaded, setFileLoaded] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [selectedCellId, setSelectedCellId] = useState<string | null>(null);
+  const selectedCellRef = useRef<{ rowId: string | null; cellId: string | null }>({ rowId: null, cellId: null });
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
 
