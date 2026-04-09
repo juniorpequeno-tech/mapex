@@ -56,6 +56,7 @@ export interface HeaderStyle {
   bgColor?: string;
   fontSize?: number;
   borderColor?: string;
+  fontColor?: string;
 }
 
 export interface FlowData {
