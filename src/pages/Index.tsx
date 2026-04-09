@@ -456,7 +456,15 @@ const Index = () => {
             </div>
 
             {/* Rows */}
-            <div ref={containerRef}>
+            <div ref={containerRef} className="relative">
+              {canEdit && activeCell && (
+                <AutofillHandle
+                  anchorEl={activeCell.el}
+                  containerEl={containerRef.current}
+                  onAutofill={handleAutofill}
+                  maxRows={data.rows.length - 1 - data.rows.findIndex(r => r.id === activeCell.rowId)}
+                />
+              )}
               {data.rows.map((row) => (
                 <FlowRowComponent
                   key={row.id}
