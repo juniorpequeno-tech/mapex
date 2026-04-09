@@ -77,7 +77,7 @@ export function FlowRowComponent({
                 ...(cell.fontSize ? { fontSize: `${cell.fontSize}px` } : {}),
               }}
               ref={el => { if (cellRefs) cellRefs.current[i] = el; }}
-              onClick={() => onSelectCell?.(row.id, cell.id)}
+              onClick={(e) => onSelectCell?.(row.id, cell.id, e.currentTarget)}
             >
               <FlowCell
                 cell={cell}
