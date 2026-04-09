@@ -72,6 +72,8 @@ export interface SavedFile {
   folderId?: string;
   createdAt: string;
   updatedAt: string;
+  ownerId?: string;
+  permission?: string;
 }
 
 export interface Folder {
