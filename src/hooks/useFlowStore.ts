@@ -51,15 +51,37 @@ export function useFlowStore() {
     createTab('Aba 1', TAB_COLORS[0]),
   ]);
   const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
+  const historyRef = useRef<FlowTab[][]>([]);
+  const MAX_HISTORY = 50;
 
   const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
   const data = activeTab.data;
 
-  const updateTabData = useCallback((updater: (prev: FlowData) => FlowData) => {
-    setTabs(prev => prev.map(tab =>
-      tab.id === activeTabId ? { ...tab, data: updater(tab.data) } : tab
-    ));
+  const pushHistory = useCallback((currentTabs: FlowTab[]) => {
+    historyRef.current = [...historyRef.current.slice(-MAX_HISTORY + 1), JSON.parse(JSON.stringify(currentTabs))];
+  }, []);
+
+  const undo = useCallback(() => {
+    if (historyRef.current.length === 0) return false;
+    const previous = historyRef.current.pop()!;
+    setTabs(previous);
+    const prevActive = previous.find(t => t.id === activeTabId);
+    if (!prevActive && previous.length > 0) {
+      setActiveTabId(previous[0].id);
+    }
+    return true;
   }, [activeTabId]);
+
+  const canUndo = historyRef.current.length > 0;
+
+  const updateTabData = useCallback((updater: (prev: FlowData) => FlowData) => {
+    setTabs(prev => {
+      pushHistory(prev);
+      return prev.map(tab =>
+        tab.id === activeTabId ? { ...tab, data: updater(tab.data) } : tab
+      );
+    });
+  }, [activeTabId, pushHistory]);
 
   // Tab management
   const addTab = useCallback(() => {
