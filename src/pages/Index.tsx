@@ -25,8 +25,27 @@ const Index = () => {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor,
-    loadTabs, undo, canUndo,
+    loadTabs, undo, canUndo, setColumnWidth,
   } = useFlowStore();
+
+  const columnWidths = data.columnWidths || data.columns.map(() => 220);
+
+  const handleColumnResize = useCallback((index: number, startX: number, startWidth: number) => {
+    const onMouseMove = (e: MouseEvent) => {
+      const diff = e.clientX - startX;
+      setColumnWidth(index, startWidth + diff);
+    };
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }, [setColumnWidth]);
 
   const [fileName, setFileName] = useState('Sem título');
   const [editingName, setEditingName] = useState(false);
