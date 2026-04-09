@@ -26,7 +26,7 @@ const Index = () => {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
-    loadTabs, undo, canUndo, setColumnWidth,
+    updateHeaderStyle, loadTabs, undo, canUndo, setColumnWidth,
   } = useFlowStore();
 
   const columnWidths = data.columnWidths || data.columns.map(() => 220);
