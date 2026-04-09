@@ -4,7 +4,7 @@ import { MemoizedFlowCell as FlowCell } from './FlowCell';
 import { CellData, CellType } from '@/types/flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tag, MessageSquare, FileText, Trash2, Plus } from 'lucide-react';
+import { Tag, MessageSquare, FileText, Trash2, Plus, Pencil, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,6 +19,8 @@ interface FlowRowProps {
   onSetCellType: (cellId: string, type: CellType) => void;
   onToggleLabel: (labelId: string) => void;
   onAddLabel: (name: string) => void;
+  onEditLabel: (labelId: string, updates: Partial<Omit<Label, 'id'>>) => void;
+  onDeleteLabel: (labelId: string) => void;
   onAddObservation: (text: string) => void;
   onAddMessage: (to: string, text: string) => void;
   onDelete: () => void;
@@ -31,10 +33,13 @@ interface FlowRowProps {
 
 export function FlowRowComponent({
   row, labels, columnCount, columnWidths, onUpdateCell, onSetCellType,
-  onToggleLabel, onAddLabel, onAddObservation, onAddMessage, onDelete,
+  onToggleLabel, onAddLabel, onEditLabel, onDeleteLabel,
+  onAddObservation, onAddMessage, onDelete,
   onFocusCell, onEnter, cellRefs, onSetRowColor, onSelectCell,
 }: FlowRowProps) {
   const [newLabelName, setNewLabelName] = useState('');
+  const [editingLabelId, setEditingLabelId] = useState<string | null>(null);
+  const [editingLabelName, setEditingLabelName] = useState('');
   const [msgTo, setMsgTo] = useState('');
   const [msgText, setMsgText] = useState('');
   const [obsText, setObsText] = useState('');
@@ -121,15 +126,62 @@ export function FlowRowComponent({
             <p className="text-xs font-medium mb-2 text-muted-foreground">Etiquetas</p>
             <div className="space-y-1 max-h-40 overflow-y-auto mb-2">
               {labels.map(l => (
-                <button
-                  key={l.id}
-                  className="flex items-center gap-2 w-full text-xs px-2 py-1 rounded hover:bg-accent"
-                  onClick={() => onToggleLabel(l.id)}
-                >
-                  <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
-                  <span className="flex-1 text-left">{l.name}</span>
-                  {row.labels.includes(l.id) && <span className="text-primary">✓</span>}
-                </button>
+                <div key={l.id} className="flex items-center gap-1 group/label">
+                  {editingLabelId === l.id ? (
+                    <div className="flex items-center gap-1 flex-1">
+                      <input
+                        className="flex-1 text-xs px-1 py-0.5 border border-input rounded bg-background"
+                        value={editingLabelName}
+                        onChange={e => setEditingLabelName(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && editingLabelName.trim()) {
+                            onEditLabel(l.id, { name: editingLabelName.trim() });
+                            setEditingLabelId(null);
+                          } else if (e.key === 'Escape') {
+                            setEditingLabelId(null);
+                          }
+                        }}
+                        autoFocus
+                      />
+                      <button
+                        className="h-5 w-5 rounded hover:bg-accent text-muted-foreground"
+                        onClick={() => {
+                          if (editingLabelName.trim()) {
+                            onEditLabel(l.id, { name: editingLabelName.trim() });
+                          }
+                          setEditingLabelId(null);
+                        }}
+                      >
+                        <Plus className="h-3 w-3 rotate-45" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        className="flex items-center gap-2 flex-1 text-xs px-2 py-1 rounded hover:bg-accent"
+                        onClick={() => onToggleLabel(l.id)}
+                      >
+                        <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
+                        <span className="flex-1 text-left">{l.name}</span>
+                        {row.labels.includes(l.id) && <span className="text-primary">✓</span>}
+                      </button>
+                      <button
+                        className="h-5 w-5 rounded hover:bg-accent text-muted-foreground opacity-0 group-hover/label:opacity-100 transition-opacity"
+                        onClick={() => { setEditingLabelId(l.id); setEditingLabelName(l.name); }}
+                        title="Editar"
+                      >
+                        <Pencil className="h-2.5 w-2.5 mx-auto" />
+                      </button>
+                      <button
+                        className="h-5 w-5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive opacity-0 group-hover/label:opacity-100 transition-opacity"
+                        onClick={() => onDeleteLabel(l.id)}
+                        title="Excluir"
+                      >
+                        <X className="h-2.5 w-2.5 mx-auto" />
+                      </button>
+                    </>
+                  )}
+                </div>
               ))}
             </div>
             <div className="flex gap-1">

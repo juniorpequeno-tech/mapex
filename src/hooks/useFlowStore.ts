@@ -6,6 +6,9 @@ const generateId = () => Math.random().toString(36).substr(2, 9);
 const DEFAULT_COLORS = [
   'hsl(210, 80%, 60%)', 'hsl(150, 60%, 45%)', 'hsl(45, 90%, 55%)',
   'hsl(0, 70%, 55%)', 'hsl(280, 60%, 55%)', 'hsl(180, 50%, 45%)',
+  'hsl(330, 65%, 55%)', 'hsl(30, 75%, 50%)', 'hsl(60, 70%, 45%)',
+  'hsl(120, 50%, 40%)', 'hsl(200, 70%, 50%)', 'hsl(300, 50%, 50%)',
+  'hsl(15, 80%, 55%)', 'hsl(240, 60%, 60%)', 'hsl(170, 60%, 40%)',
 ];
 
 const TAB_COLORS = [
@@ -244,14 +247,35 @@ export function useFlowStore() {
   }, [updateTabData]);
 
   const addLabel = useCallback((name: string) => {
+    const usedColors = new Set(data.labels.map(l => l.color));
+    const availableColor = DEFAULT_COLORS.find(c => !usedColors.has(c))
+      || `hsl(${Math.floor(Math.random() * 360)}, 60%, 50%)`;
     const newLabel: Label = {
       id: generateId(),
       name,
-      color: DEFAULT_COLORS[data.labels.length % DEFAULT_COLORS.length],
+      color: availableColor,
     };
     updateTabData(prev => ({ ...prev, labels: [...prev.labels, newLabel] }));
     return newLabel;
-  }, [data.labels.length, updateTabData]);
+  }, [data.labels, updateTabData]);
+
+  const editLabel = useCallback((labelId: string, updates: Partial<Omit<Label, 'id'>>) => {
+    updateTabData(prev => ({
+      ...prev,
+      labels: prev.labels.map(l => l.id === labelId ? { ...l, ...updates } : l),
+    }));
+  }, [updateTabData]);
+
+  const deleteLabel = useCallback((labelId: string) => {
+    updateTabData(prev => ({
+      ...prev,
+      labels: prev.labels.filter(l => l.id !== labelId),
+      rows: prev.rows.map(row => ({
+        ...row,
+        labels: row.labels.filter(id => id !== labelId),
+      })),
+    }));
+  }, [updateTabData]);
 
   const addObservation = useCallback((rowId: string, text: string) => {
     const entry = { id: generateId(), text, createdAt: new Date().toISOString() };
@@ -327,7 +351,7 @@ export function useFlowStore() {
     setActiveTabId, addTab, removeTab, renameTab, setTabColor,
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
-    updateCell, setCellType, toggleLabel, addLabel,
+    updateCell, setCellType, toggleLabel, addLabel, editLabel, deleteLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
     updateHeaderStyle, updateColumnHeaderStyle, loadTabs,
     undo, redo, canUndo, canRedo, setColumnWidth,
