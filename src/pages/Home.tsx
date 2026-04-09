@@ -5,7 +5,7 @@ import { getSavedFiles, deleteFile, createNewFile, saveFile, getFolders, createF
 import { SavedFile, Folder } from '@/types/flow';
 import {
   Plus, FileText, Trash2, FolderOpen, GitBranch, Search,
-  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut,
+  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut, Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 type SortMode = 'updated' | 'created' | 'name';
 
 const Home = () => {
-  const { signOut, profile } = useAuth();
+  const { signOut, isAdmin } = useAuth();
   const [files, setFiles] = useState<SavedFile[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [newFileDialog, setNewFileDialog] = useState(false);
@@ -159,6 +159,12 @@ const Home = () => {
           <h1 className="text-xl font-bold">Mapex</h1>
         </div>
         <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Button size="sm" variant="outline" onClick={() => navigate('/admin')} className="gap-1.5">
+              <Shield className="h-4 w-4" />
+              Painel Admin
+            </Button>
+          )}
           <Button size="sm" variant="outline" onClick={() => setNewFolderDialog(true)} className="gap-1.5">
             <FolderPlus className="h-4 w-4" />
             Nova pasta
