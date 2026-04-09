@@ -266,6 +266,13 @@ export function useFlowStore() {
     }));
   }, [updateTabData]);
 
+  const updateHeaderStyle = useCallback((style: Partial<HeaderStyle>) => {
+    updateTabData(prev => ({
+      ...prev,
+      headerStyle: { ...prev.headerStyle, ...style },
+    }));
+  }, [updateTabData]);
+
   const loadTabs = useCallback((newTabs: FlowTab[]) => {
     setTabs(newTabs);
     setActiveTabId(newTabs[0]?.id || '');
@@ -277,7 +284,8 @@ export function useFlowStore() {
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize, loadTabs,
+    addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
+    updateHeaderStyle, loadTabs,
     undo, canUndo, setColumnWidth,
   };
 }
