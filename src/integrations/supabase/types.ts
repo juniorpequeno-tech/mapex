@@ -41,6 +41,112 @@ export type Database = {
         }
         Relationships: []
       }
+      file_comments: {
+        Row: {
+          col_index: number | null
+          content: string
+          created_at: string
+          file_id: string
+          id: string
+          row_index: number | null
+          tab_name: string | null
+          user_id: string
+        }
+        Insert: {
+          col_index?: number | null
+          content: string
+          created_at?: string
+          file_id: string
+          id?: string
+          row_index?: number | null
+          tab_name?: string | null
+          user_id: string
+        }
+        Update: {
+          col_index?: number | null
+          content?: string
+          created_at?: string
+          file_id?: string
+          id?: string
+          row_index?: number | null
+          tab_name?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "file_comments_file_id_fkey"
+            columns: ["file_id"]
+            isOneToOne: false
+            referencedRelation: "files"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      file_shares: {
+        Row: {
+          created_at: string
+          file_id: string
+          id: string
+          permission: Database["public"]["Enums"]["share_permission"]
+          shared_by: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_id: string
+          id?: string
+          permission?: Database["public"]["Enums"]["share_permission"]
+          shared_by?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_id?: string
+          id?: string
+          permission?: Database["public"]["Enums"]["share_permission"]
+          shared_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "file_shares_file_id_fkey"
+            columns: ["file_id"]
+            isOneToOne: false
+            referencedRelation: "files"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      files: {
+        Row: {
+          content: Json
+          created_at: string
+          folder_id: string | null
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          folder_id?: string | null
+          id?: string
+          name?: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          folder_id?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -106,6 +212,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_file: {
+        Args: { _file_id: string; _user_id: string }
+        Returns: boolean
+      }
+      get_file_permission: {
+        Args: { _file_id: string; _user_id: string }
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -128,6 +242,7 @@ export type Database = {
         | "administrador_master"
         | "administrador_secundario"
         | "usuario_padrao"
+      share_permission: "leitor" | "comentador" | "editor"
       user_status: "ativo" | "inativo"
     }
     CompositeTypes: {
@@ -261,6 +376,7 @@ export const Constants = {
         "administrador_secundario",
         "usuario_padrao",
       ],
+      share_permission: ["leitor", "comentador", "editor"],
       user_status: ["ativo", "inativo"],
     },
   },
