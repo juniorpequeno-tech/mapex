@@ -6,7 +6,7 @@ import { TabBar } from '@/components/flow/TabBar';
 import { FormatToolbar } from '@/components/flow/FormatToolbar';
 import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2, Redo2, Trash2 } from 'lucide-react';
 import { getFileByIdAsync, saveFileAsync } from '@/lib/fileStorage';
-import { SavedFile } from '@/types/flow';
+import { SavedFile, CellData } from '@/types/flow';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
