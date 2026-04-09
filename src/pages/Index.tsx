@@ -4,7 +4,7 @@ import { useFlowStore } from '@/hooks/useFlowStore';
 import { MemoizedFlowRowComponent as FlowRowComponent } from '@/components/flow/FlowRow';
 import { TabBar } from '@/components/flow/TabBar';
 import { FormatToolbar } from '@/components/flow/FormatToolbar';
-import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2, Redo2 } from 'lucide-react';
+import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2, Redo2, Trash2 } from 'lucide-react';
 import { getFileByIdAsync, saveFileAsync } from '@/lib/fileStorage';
 import { SavedFile } from '@/types/flow';
 import { toast } from 'sonner';
@@ -55,7 +55,7 @@ const Index = () => {
   const [editingCol, setEditingCol] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
-  // Track selected cell via ref to avoid full re-renders
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; colIndex: number } | null>(null);
   const selectedInfoRef = useRef<{ type: 'header' | 'data'; colIndex?: number; rowId?: string; cellId?: string } | null>(null);
   const selectedElRef = useRef<HTMLElement | null>(null);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
