@@ -330,17 +330,14 @@ const Index = () => {
                       </div>
                     )}
                     <div
-                      className={cn(
-                        "relative px-2 py-2 border-r border-border/50 shrink-0 cursor-pointer transition-colors",
-                        selectedHeaderCol === i && "ring-2 ring-primary ring-inset"
-                      )}
+                      className="relative px-2 py-2 border-r border-border/50 shrink-0 cursor-pointer transition-colors"
                       style={{
                         width: columnWidths[i],
                         backgroundColor: data.columnHeaderStyles?.[i]?.bgColor || undefined,
                       }}
-                      onClick={() => {
+                      onClick={(e) => {
                         if (canEdit) {
-                          setSelectedHeaderCol(prev => prev === i ? null : i);
+                          selectCell(e.currentTarget, { type: 'header', colIndex: i });
                         }
                       }}
                     >
