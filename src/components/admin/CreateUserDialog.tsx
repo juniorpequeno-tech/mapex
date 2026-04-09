@@ -97,14 +97,8 @@ const CreateUserDialog = ({ open, onOpenChange, onSuccess, isMasterAdmin }: Crea
 
     setIsLoading(false);
 
-    if (autoPassword) {
-      setGeneratedPassword(finalPassword);
-      toast({ title: "Usuário criado!", description: "Copie a senha gerada abaixo." });
-    } else {
-      toast({ title: "Sucesso", description: "Usuário criado com sucesso!" });
-      resetForm();
-      onOpenChange(false);
-    }
+    setGeneratedPassword(finalPassword);
+    toast({ title: "Usuário criado!", description: "Copie as credenciais abaixo." });
     onSuccess();
   };
 
