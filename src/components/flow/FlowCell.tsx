@@ -172,7 +172,7 @@ export function FlowCell({ cell, onUpdate, onSetType, onTabNext, onEnter, onSetR
               </PopoverContent>
             </Popover>
             <Select value={cell.value} onValueChange={v => onUpdate({ value: v })}>
-              <SelectTrigger className="h-7 border-0 border-b border-transparent hover:border-border text-sm shadow-none px-2">
+              <SelectTrigger className="h-7 border-0 border-b border-transparent hover:border-border text-sm shadow-none px-2 [&>span]:truncate [&>span]:block [&>span]:text-left [&>span]:whitespace-normal [&>span]:line-clamp-2">
                 <SelectValue placeholder="Selecione..." />
               </SelectTrigger>
               <SelectContent>

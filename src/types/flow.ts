@@ -50,6 +50,7 @@ export interface FlowRow {
 
 export interface FlowData {
   columns: string[];
+  columnWidths?: number[];
   rows: FlowRow[];
   labels: Label[];
 }
