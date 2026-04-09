@@ -5,7 +5,7 @@ import { getSavedFiles, deleteFile, createNewFile, saveFile, getFolders, createF
 import { SavedFile, Folder } from '@/types/flow';
 import {
   Plus, FileText, Trash2, FolderOpen, GitBranch, Search,
-  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut,
+  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut, Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
