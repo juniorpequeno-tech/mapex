@@ -59,12 +59,17 @@ export interface HeaderStyle {
   fontColor?: string;
 }
 
+export interface ColumnHeaderStyle {
+  bgColor?: string;
+}
+
 export interface FlowData {
   columns: string[];
   columnWidths?: number[];
   rows: FlowRow[];
   labels: Label[];
   headerStyle?: HeaderStyle;
+  columnHeaderStyles?: Record<number, ColumnHeaderStyle>;
 }
 
 export interface FlowTab {

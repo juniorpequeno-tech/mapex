@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { FlowTab, FlowData, FlowRow, CellData, CellType, Label, Message, HeaderStyle } from '@/types/flow';
+import { FlowTab, FlowData, FlowRow, CellData, CellType, Label, Message, HeaderStyle, ColumnHeaderStyle } from '@/types/flow';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -273,6 +273,16 @@ export function useFlowStore() {
     }));
   }, [updateTabData]);
 
+  const updateColumnHeaderStyle = useCallback((colIndex: number, style: Partial<ColumnHeaderStyle>) => {
+    updateTabData(prev => ({
+      ...prev,
+      columnHeaderStyles: {
+        ...prev.columnHeaderStyles,
+        [colIndex]: { ...(prev.columnHeaderStyles?.[colIndex] || {}), ...style },
+      },
+    }));
+  }, [updateTabData]);
+
   const loadTabs = useCallback((newTabs: FlowTab[]) => {
     setTabs(newTabs);
     setActiveTabId(newTabs[0]?.id || '');
@@ -285,7 +295,7 @@ export function useFlowStore() {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
-    updateHeaderStyle, loadTabs,
+    updateHeaderStyle, updateColumnHeaderStyle, loadTabs,
     undo, canUndo, setColumnWidth,
   };
 }

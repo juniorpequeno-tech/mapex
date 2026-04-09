@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ShareDialog from '@/components/ShareDialog';
 import { useAuth } from '@/contexts/AuthContext';
+import { cn } from '@/lib/utils';
 
 const Index = () => {
   const { fileId } = useParams<{ fileId: string }>();
@@ -26,7 +27,7 @@ const Index = () => {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
-    updateHeaderStyle, loadTabs, undo, canUndo, setColumnWidth,
+    updateHeaderStyle, updateColumnHeaderStyle, loadTabs, undo, canUndo, setColumnWidth,
   } = useFlowStore();
 
   const columnWidths = data.columnWidths || data.columns.map(() => 220);
@@ -52,6 +53,7 @@ const Index = () => {
   const [editingName, setEditingName] = useState(false);
   const [currentFile, setCurrentFile] = useState<SavedFile | null>(null);
   const [editingCol, setEditingCol] = useState<number | null>(null);
+  const [selectedHeaderCol, setSelectedHeaderCol] = useState<number | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [fileLoaded, setFileLoaded] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
@@ -257,16 +259,23 @@ const Index = () => {
       {canEdit && (
         <FormatToolbar
           disabled={false}
-          currentCellColor={data.headerStyle?.bgColor}
+          currentCellColor={selectedHeaderCol !== null ? data.columnHeaderStyles?.[selectedHeaderCol]?.bgColor : undefined}
           currentRowColor={data.headerStyle?.bgColor}
           currentBorder={data.headerStyle?.borderColor}
           currentFontSize={data.headerStyle?.fontSize || 12}
           currentFontColor={data.headerStyle?.fontColor}
-          onPaintCell={(color) => updateHeaderStyle({ bgColor: color })}
+          onPaintCell={(color) => {
+            if (selectedHeaderCol !== null) {
+              updateColumnHeaderStyle(selectedHeaderCol, { bgColor: color });
+            } else {
+              toast.info('Clique em uma coluna do cabeçalho primeiro para pintar a célula');
+            }
+          }}
           onPaintRow={(color) => updateHeaderStyle({ bgColor: color })}
           onSetBorder={(color) => updateHeaderStyle({ borderColor: color })}
           onSetFontSize={(size) => updateHeaderStyle({ fontSize: size })}
           onSetFontColor={(color) => updateHeaderStyle({ fontColor: color })}
+          selectedHeaderCol={selectedHeaderCol}
         />
       )}
 
@@ -305,8 +314,19 @@ const Index = () => {
                       </div>
                     )}
                     <div
-                      className="relative px-2 py-2 border-r border-border/50 shrink-0"
-                      style={{ width: columnWidths[i] }}
+                      className={cn(
+                        "relative px-2 py-2 border-r border-border/50 shrink-0 cursor-pointer transition-colors",
+                        selectedHeaderCol === i && "ring-2 ring-primary ring-inset"
+                      )}
+                      style={{
+                        width: columnWidths[i],
+                        backgroundColor: data.columnHeaderStyles?.[i]?.bgColor || undefined,
+                      }}
+                      onClick={() => {
+                        if (canEdit) {
+                          setSelectedHeaderCol(prev => prev === i ? null : i);
+                        }
+                      }}
                     >
                       {editingCol === i && canEdit ? (
                         <input
@@ -320,6 +340,7 @@ const Index = () => {
                           onBlur={() => setEditingCol(null)}
                           onKeyDown={e => e.key === 'Enter' && setEditingCol(null)}
                           autoFocus
+                          onClick={e => e.stopPropagation()}
                         />
                       ) : (
                         <button
@@ -328,7 +349,11 @@ const Index = () => {
                             fontSize: data.headerStyle?.fontSize ? `${data.headerStyle.fontSize}px` : '12px',
                             color: data.headerStyle?.fontColor || 'hsl(var(--muted-foreground))',
                           }}
-                          onClick={() => canEdit && setEditingCol(i)}
+                          onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            canEdit && setEditingCol(i);
+                          }}
+                          onClick={e => e.stopPropagation()}
                         >
                           {col}
                         </button>

@@ -27,6 +27,7 @@ interface FormatToolbarProps {
   currentFontSize?: number;
   currentFontColor?: string;
   disabled?: boolean;
+  selectedHeaderCol?: number | null;
 }
 
 function ColorPicker({ colors, onSelect, current }: { colors: string[]; onSelect: (c: string | undefined) => void; current?: string }) {
@@ -53,7 +54,7 @@ function ColorPicker({ colors, onSelect, current }: { colors: string[]; onSelect
 export function FormatToolbar({
   onPaintCell, onPaintRow, onSetBorder, onSetFontSize, onSetFontColor,
   currentCellColor, currentRowColor, currentBorder, currentFontSize = 14, currentFontColor,
-  disabled,
+  disabled, selectedHeaderCol,
 }: FormatToolbarProps) {
   if (disabled) return null;
 
