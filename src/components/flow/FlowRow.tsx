@@ -29,7 +29,7 @@ interface FlowRowProps {
 }
 
 export function FlowRowComponent({
-  row, labels, columnCount, onUpdateCell, onSetCellType,
+  row, labels, columnCount, columnWidths, onUpdateCell, onSetCellType,
   onToggleLabel, onAddLabel, onAddObservation, onAddMessage, onDelete,
   onFocusCell, onEnter, cellRefs, onSetRowColor,
 }: FlowRowProps) {
