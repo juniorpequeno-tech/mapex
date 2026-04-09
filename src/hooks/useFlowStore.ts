@@ -248,6 +248,24 @@ export function useFlowStore() {
     }));
   }, [updateTabData]);
 
+  const setRowBorder = useCallback((rowId: string, color: string | undefined) => {
+    updateTabData(prev => ({
+      ...prev,
+      rows: prev.rows.map(row =>
+        row.id === rowId ? { ...row, borderColor: color } : row
+      ),
+    }));
+  }, [updateTabData]);
+
+  const setRowFontSize = useCallback((rowId: string, size: number) => {
+    updateTabData(prev => ({
+      ...prev,
+      rows: prev.rows.map(row =>
+        row.id === rowId ? { ...row, fontSize: size } : row
+      ),
+    }));
+  }, [updateTabData]);
+
   const loadTabs = useCallback((newTabs: FlowTab[]) => {
     setTabs(newTabs);
     setActiveTabId(newTabs[0]?.id || '');
@@ -259,7 +277,7 @@ export function useFlowStore() {
     protectTab, unlockTab, removeProtection,
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
-    addObservation, addMessage, setRowColor, loadTabs,
+    addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize, loadTabs,
     undo, canUndo, setColumnWidth,
   };
 }
