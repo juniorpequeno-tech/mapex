@@ -52,16 +52,32 @@ export function useFlowStore() {
   ]);
   const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
   const historyRef = useRef<FlowTab[][]>([]);
+  const historyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingSnapshotRef = useRef<FlowTab[] | null>(null);
   const MAX_HISTORY = 50;
 
   const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
   const data = activeTab.data;
 
-  const pushHistory = useCallback((currentTabs: FlowTab[]) => {
-    historyRef.current = [...historyRef.current.slice(-MAX_HISTORY + 1), JSON.parse(JSON.stringify(currentTabs))];
+  const flushHistory = useCallback(() => {
+    if (pendingSnapshotRef.current) {
+      historyRef.current = [...historyRef.current.slice(-MAX_HISTORY + 1), pendingSnapshotRef.current];
+      pendingSnapshotRef.current = null;
+    }
   }, []);
 
+  const pushHistory = useCallback((currentTabs: FlowTab[]) => {
+    // Only snapshot if no pending snapshot (debounce rapid changes)
+    if (!pendingSnapshotRef.current) {
+      pendingSnapshotRef.current = structuredClone(currentTabs);
+    }
+    if (historyTimerRef.current) clearTimeout(historyTimerRef.current);
+    historyTimerRef.current = setTimeout(flushHistory, 500);
+  }, [flushHistory]);
+
   const undo = useCallback(() => {
+    // Flush any pending snapshot first
+    flushHistory();
     if (historyRef.current.length === 0) return false;
     const previous = historyRef.current.pop()!;
     setTabs(previous);
@@ -70,9 +86,9 @@ export function useFlowStore() {
       setActiveTabId(previous[0].id);
     }
     return true;
-  }, [activeTabId]);
+  }, [activeTabId, flushHistory]);
 
-  const canUndo = historyRef.current.length > 0;
+  const canUndo = historyRef.current.length > 0 || pendingSnapshotRef.current !== null;
 
   const updateTabData = useCallback((updater: (prev: FlowData) => FlowData) => {
     setTabs(prev => {

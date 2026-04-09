@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FlowRow as FlowRowType, Label } from '@/types/flow';
-import { FlowCell } from './FlowCell';
+import { MemoizedFlowCell as FlowCell } from './FlowCell';
 import { CellData, CellType } from '@/types/flow';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -357,3 +357,4 @@ export function FlowRowComponent({
   );
 }
 
+export const MemoizedFlowRowComponent = React.memo(FlowRowComponent);

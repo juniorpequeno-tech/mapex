@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFlowStore } from '@/hooks/useFlowStore';
-import { FlowRowComponent } from '@/components/flow/FlowRow';
+import { MemoizedFlowRowComponent as FlowRowComponent } from '@/components/flow/FlowRow';
 import { TabBar } from '@/components/flow/TabBar';
 import { FormatToolbar } from '@/components/flow/FormatToolbar';
 import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2 } from 'lucide-react';
