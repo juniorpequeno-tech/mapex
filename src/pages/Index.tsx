@@ -114,7 +114,15 @@ const Index = () => {
       if (targetRow) {
         const targetCell = targetRow.cells[activeCell.colIndex];
         if (targetCell) {
-          updateCell(targetRow.id, targetCell.id, { value: sourceCell.value });
+          const cellUpdates: Partial<CellData> = { 
+            value: sourceCell.value, 
+            type: sourceCell.type 
+          };
+          if (sourceCell.dropdownOptions) {
+            cellUpdates.dropdownOptions = sourceCell.dropdownOptions;
+          }
+          updateCell(targetRow.id, targetCell.id, cellUpdates);
+          setCellType(targetRow.id, targetCell.id, sourceCell.type);
         }
       }
     }
