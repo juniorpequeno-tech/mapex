@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useFlowStore } from '@/hooks/useFlowStore';
 import { FlowRowComponent } from '@/components/flow/FlowRow';
 import { TabBar } from '@/components/flow/TabBar';
-import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare } from 'lucide-react';
+import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare, Undo2 } from 'lucide-react';
 import { getFileByIdAsync, saveFileAsync } from '@/lib/fileStorage';
 import { SavedFile } from '@/types/flow';
 import { toast } from 'sonner';
@@ -25,7 +25,7 @@ const Index = () => {
     updateColumnTitle, addColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel,
     addObservation, addMessage, setRowColor,
-    loadTabs,
+    loadTabs, undo, canUndo,
   } = useFlowStore();
 
   const [fileName, setFileName] = useState('Sem título');
@@ -63,6 +63,20 @@ const Index = () => {
     };
     loadFile();
   }, [fileId]);
+
+  // Ctrl+Z undo shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey && canEdit) {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+        e.preventDefault();
+        undo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, canEdit]);
 
   const handleSave = useCallback(async () => {
     if (!currentFile || !canEdit) return;
@@ -186,6 +200,23 @@ const Index = () => {
             >
               <Share2 className="h-3.5 w-3.5" />
               Compartilhar
+            </Button>
+          )}
+          {canEdit && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-xs"
+              onClick={() => {
+                const success = undo();
+                if (success) toast.success('Ação desfeita!');
+                else toast.info('Nada para desfazer');
+              }}
+              disabled={!canUndo}
+              title="Desfazer (Ctrl+Z)"
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+              Desfazer
             </Button>
           )}
           {canEdit && (
