@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Paintbrush, PaintBucket, Grid3X3, Type } from 'lucide-react';
+import { Paintbrush, PaintBucket, Grid3X3, Type, Palette } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
