@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Copy, Eye, EyeOff } from "lucide-react";
+import { Copy, Eye, EyeOff, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CreateUserDialogProps {
