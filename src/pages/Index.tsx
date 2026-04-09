@@ -96,6 +96,13 @@ const Index = () => {
     }
   }, []);
 
+  // Determine permission
+  const permission = currentFile?.permission || 'owner';
+  const isOwner = permission === 'owner';
+  const canEdit = isOwner || permission === 'editor' || isAdmin;
+  const canComment = canEdit || permission === 'comentador';
+  const canShare = isOwner || isAdmin;
+
   const handleAutofill = useCallback((count: number) => {
     if (!activeCell || !canEdit) return;
     const rowIndex = data.rows.findIndex(r => r.id === activeCell.rowId);
@@ -112,13 +119,6 @@ const Index = () => {
       }
     }
   }, [activeCell, canEdit, data.rows, updateCell]);
-
-  // Determine permission
-  const permission = currentFile?.permission || 'owner';
-  const isOwner = permission === 'owner';
-  const canEdit = isOwner || permission === 'editor' || isAdmin;
-  const canComment = canEdit || permission === 'comentador';
-  const canShare = isOwner || isAdmin;
 
   // Load file from Supabase
   useEffect(() => {
