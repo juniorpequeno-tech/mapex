@@ -3,15 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useFlowStore } from '@/hooks/useFlowStore';
 import { FlowRowComponent } from '@/components/flow/FlowRow';
 import { TabBar } from '@/components/flow/TabBar';
-import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil } from 'lucide-react';
-import { getSavedFiles, saveFile } from '@/lib/fileStorage';
+import { Plus, ChevronRight, Save, GitBranch, ArrowLeft, Pencil, Share2, Eye, MessageSquare } from 'lucide-react';
+import { getFileByIdAsync, saveFileAsync } from '@/lib/fileStorage';
 import { SavedFile } from '@/types/flow';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import ShareDialog from '@/components/ShareDialog';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const { fileId } = useParams<{ fileId: string }>();
   const navigate = useNavigate();
+  const { user, isAdmin } = useAuth();
 
   const {
     tabs, activeTabId, activeTab, data,
@@ -25,38 +30,54 @@ const Index = () => {
 
   const [fileName, setFileName] = useState('Sem título');
   const [editingName, setEditingName] = useState(false);
-  const [currentFileId, setCurrentFileId] = useState<string | null>(null);
+  const [currentFile, setCurrentFile] = useState<SavedFile | null>(null);
   const [editingCol, setEditingCol] = useState<number | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [fileLoaded, setFileLoaded] = useState(false);
   const rowRefsMap = useRef<Map<string, React.MutableRefObject<(HTMLDivElement | null)[]>>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Load file from storage
+  // Determine permission
+  const permission = currentFile?.permission || 'owner';
+  const isOwner = permission === 'owner';
+  const canEdit = isOwner || permission === 'editor' || isAdmin;
+  const canComment = canEdit || permission === 'comentador';
+  const canShare = isOwner || isAdmin;
+
+  // Load file from Supabase
   useEffect(() => {
-    if (fileId) {
-      const files = getSavedFiles();
-      const file = files.find(f => f.id === fileId);
+    const loadFile = async () => {
+      if (!fileId) return;
+      const file = await getFileByIdAsync(fileId);
       if (file) {
         setFileName(file.name);
-        setCurrentFileId(file.id);
+        setCurrentFile(file);
         if (file.tabs.length > 0) {
           loadTabs(file.tabs);
         }
+        setFileLoaded(true);
+      } else {
+        toast.error('Arquivo não encontrado ou sem permissão');
+        navigate('/');
       }
-    }
+    };
+    loadFile();
   }, [fileId]);
 
-  const handleSave = useCallback(() => {
-    const file: SavedFile = {
-      id: currentFileId || Math.random().toString(36).substr(2, 9),
-      name: fileName,
-      tabs,
-      createdAt: currentFileId ? getSavedFiles().find(f => f.id === currentFileId)?.createdAt || new Date().toISOString() : new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    saveFile(file);
-    if (!currentFileId) setCurrentFileId(file.id);
-    toast.success('Arquivo salvo!');
-  }, [currentFileId, fileName, tabs]);
+  const handleSave = useCallback(async () => {
+    if (!currentFile || !canEdit) return;
+    try {
+      await saveFileAsync({
+        ...currentFile,
+        name: fileName,
+        tabs,
+        updatedAt: new Date().toISOString(),
+      });
+      toast.success('Arquivo salvo!');
+    } catch (e: any) {
+      toast.error('Erro ao salvar: ' + e.message);
+    }
+  }, [currentFile, fileName, tabs, canEdit]);
 
   const getRowRefs = useCallback((rowId: string) => {
     if (!rowRefsMap.current.has(rowId)) {
@@ -83,6 +104,7 @@ const Index = () => {
   }, []);
 
   const handleEnterNewRow = useCallback(() => {
+    if (!canEdit) return;
     addRow();
     setTimeout(() => {
       if (containerRef.current) {
@@ -94,9 +116,25 @@ const Index = () => {
         }
       }
     }, 50);
-  }, [addRow]);
+  }, [addRow, canEdit]);
 
   const isLocked = activeTab.isProtected && activeTab.isLocked;
+
+  const permissionBadge = !isOwner && permission ? (
+    <Badge variant="outline" className="text-[10px] gap-1 ml-2">
+      {permission === 'leitor' && <><Eye className="h-3 w-3" /> Leitor</>}
+      {permission === 'comentador' && <><MessageSquare className="h-3 w-3" /> Comentador</>}
+      {permission === 'editor' && <><Pencil className="h-3 w-3" /> Editor</>}
+    </Badge>
+  ) : null;
+
+  if (!fileLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -115,7 +153,7 @@ const Index = () => {
             <span className="text-sm font-bold text-primary">Mapex</span>
           </div>
           <div className="h-4 w-px bg-border" />
-          {editingName ? (
+          {editingName && canEdit ? (
             <Input
               className="h-7 w-48 text-sm"
               value={fileName}
@@ -127,26 +165,48 @@ const Index = () => {
           ) : (
             <button
               className="text-sm font-medium hover:text-primary flex items-center gap-1 transition-colors"
-              onClick={() => setEditingName(true)}
+              onClick={() => canEdit && setEditingName(true)}
             >
               {fileName}
-              <Pencil className="h-3 w-3 text-muted-foreground" />
+              {canEdit && <Pencil className="h-3 w-3 text-muted-foreground" />}
             </button>
           )}
+          {permissionBadge}
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground">
             {data.rows.length} linha{data.rows.length !== 1 ? 's' : ''} · {data.columns.length} etapa{data.columns.length !== 1 ? 's' : ''}
           </span>
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded hover:opacity-90 transition-opacity"
-          >
-            <Save className="h-3.5 w-3.5" />
-            Salvar
-          </button>
+          {canShare && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-xs"
+              onClick={() => setShareOpen(true)}
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Compartilhar
+            </Button>
+          )}
+          {canEdit && (
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded hover:opacity-90 transition-opacity"
+            >
+              <Save className="h-3.5 w-3.5" />
+              Salvar
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Read-only banner */}
+      {!canEdit && (
+        <div className="bg-muted/50 border-b border-border px-4 py-2 text-xs text-muted-foreground flex items-center gap-2">
+          <Eye className="h-4 w-4" />
+          {permission === 'leitor' ? 'Modo leitura — você pode apenas visualizar este arquivo.' : 'Modo comentador — você pode visualizar e comentar, mas não editar.'}
+        </div>
+      )}
 
       {/* Main content */}
       <div className="flex-1 overflow-x-auto">
@@ -167,7 +227,7 @@ const Index = () => {
                       </div>
                     )}
                     <div className="flex-1 min-w-[180px] px-2 py-2 border-r border-border/50">
-                      {editingCol === i ? (
+                      {editingCol === i && canEdit ? (
                         <input
                           className="w-full h-6 px-1 text-xs font-medium bg-background border border-primary rounded focus:outline-none"
                           value={col}
@@ -179,7 +239,7 @@ const Index = () => {
                       ) : (
                         <button
                           className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors truncate w-full text-left"
-                          onClick={() => setEditingCol(i)}
+                          onClick={() => canEdit && setEditingCol(i)}
                         >
                           {col}
                         </button>
@@ -188,13 +248,15 @@ const Index = () => {
                   </React.Fragment>
                 ))}
               </div>
-              <button
-                className="px-2 py-2 hover:bg-accent text-muted-foreground transition-colors shrink-0 flex items-center"
-                onClick={addColumn}
-                title="Adicionar etapa"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
+              {canEdit && (
+                <button
+                  className="px-2 py-2 hover:bg-accent text-muted-foreground transition-colors shrink-0 flex items-center"
+                  onClick={addColumn}
+                  title="Adicionar etapa"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              )}
               <div className="w-[100px] shrink-0" />
             </div>
 
@@ -206,32 +268,34 @@ const Index = () => {
                   row={row}
                   labels={data.labels}
                   columnCount={data.columns.length}
-                  onUpdateCell={(cellId, updates) => updateCell(row.id, cellId, updates)}
-                  onSetCellType={(cellId, type) => setCellType(row.id, cellId, type)}
-                  onToggleLabel={labelId => toggleLabel(row.id, labelId)}
-                  onAddLabel={addLabel}
-                  onAddObservation={text => addObservation(row.id, text)}
-                  onAddMessage={(to, text) => addMessage(row.id, to, text)}
-                  onDelete={() => deleteRow(row.id)}
-                  onSetRowColor={(color) => setRowColor(row.id, color)}
+                  onUpdateCell={canEdit ? (cellId, updates) => updateCell(row.id, cellId, updates) : () => {}}
+                  onSetCellType={canEdit ? (cellId, type) => setCellType(row.id, cellId, type) : () => {}}
+                  onToggleLabel={canEdit ? labelId => toggleLabel(row.id, labelId) : () => {}}
+                  onAddLabel={canEdit ? addLabel : () => {}}
+                  onAddObservation={canComment ? text => addObservation(row.id, text) : () => {}}
+                  onAddMessage={canComment ? (to, text) => addMessage(row.id, to, text) : () => {}}
+                  onDelete={canEdit ? () => deleteRow(row.id) : () => {}}
+                  onSetRowColor={canEdit ? (color) => setRowColor(row.id, color) : () => {}}
                   cellRefs={getRowRefs(row.id)}
                   onFocusCell={cellIndex => {
                     if (cellIndex < data.columns.length) {
                       focusCellInRow(row.id, cellIndex);
                     }
                   }}
-                  onEnter={handleEnterNewRow}
+                  onEnter={canEdit ? handleEnterNewRow : () => {}}
                 />
               ))}
             </div>
 
-            <button
-              className="w-full py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors flex items-center justify-center gap-1 border-b border-border"
-              onClick={addRow}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Nova linha
-            </button>
+            {canEdit && (
+              <button
+                className="w-full py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors flex items-center justify-center gap-1 border-b border-border"
+                onClick={addRow}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Nova linha
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -241,14 +305,25 @@ const Index = () => {
         tabs={tabs}
         activeTabId={activeTabId}
         onSelectTab={setActiveTabId}
-        onAddTab={addTab}
-        onRemoveTab={removeTab}
-        onRenameTab={renameTab}
-        onSetTabColor={setTabColor}
-        onProtectTab={protectTab}
+        onAddTab={canEdit ? addTab : () => {}}
+        onRemoveTab={canEdit ? removeTab : () => {}}
+        onRenameTab={canEdit ? renameTab : () => {}}
+        onSetTabColor={canEdit ? setTabColor : () => {}}
+        onProtectTab={canEdit ? protectTab : () => {}}
         onUnlockTab={unlockTab}
-        onRemoveProtection={removeProtection}
+        onRemoveProtection={canEdit ? removeProtection : () => {}}
       />
+
+      {/* Share dialog */}
+      {currentFile && (
+        <ShareDialog
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+          fileId={currentFile.id}
+          fileName={fileName}
+          ownerId={currentFile.ownerId || ''}
+        />
+      )}
     </div>
   );
 };

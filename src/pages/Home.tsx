@@ -1,21 +1,29 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { getSavedFiles, deleteFile, createNewFile, saveFile, getFolders, createFolder, deleteFolder, moveFileToFolder } from '@/lib/fileStorage';
+import { getSavedFilesAsync, deleteFileAsync, createNewFileAsync, moveFileToFolderAsync, getFolders, createFolder, deleteFolder } from '@/lib/fileStorage';
 import { SavedFile, Folder } from '@/types/flow';
 import {
   Plus, FileText, Trash2, FolderOpen, GitBranch, Search,
-  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut, Shield, User,
+  FolderPlus, ChevronRight, ChevronDown, ArrowUpDown, Clock, Calendar as CalendarIcon, MoreVertical, LogOut, Shield, User, Share2, Eye, MessageSquare, Pencil,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import ShareDialog from '@/components/ShareDialog';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 
 type SortMode = 'updated' | 'created' | 'name';
+
+const permissionIcons: Record<string, React.ReactNode> = {
+  leitor: <Eye className="h-3 w-3" />,
+  comentador: <MessageSquare className="h-3 w-3" />,
+  editor: <Pencil className="h-3 w-3" />,
+};
 
 const Home = () => {
   const { signOut, isAdmin, profile, user } = useAuth();
@@ -29,14 +37,17 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('updated');
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [shareFile, setShareFile] = useState<SavedFile | null>(null);
   const navigate = useNavigate();
 
-  const reload = () => {
-    setFiles(getSavedFiles());
+  const reload = async () => {
+    if (!user) return;
+    const dbFiles = await getSavedFilesAsync(user.id);
+    setFiles(dbFiles);
     setFolders(getFolders());
   };
 
-  useEffect(() => { reload(); }, []);
+  useEffect(() => { reload(); }, [user]);
 
   const toggleFolder = (id: string) => {
     setExpandedFolders(prev => {
@@ -60,17 +71,24 @@ const Home = () => {
     return files.filter(f => f.name.toLowerCase().includes(q));
   }, [files, searchQuery]);
 
-  const rootFiles = useMemo(() => sortFiles(filteredFiles.filter(f => !f.folderId)), [filteredFiles, sortMode]);
-  const getFilesInFolder = (folderId: string) => sortFiles(filteredFiles.filter(f => f.folderId === folderId));
+  const ownFiles = useMemo(() => filteredFiles.filter(f => f.permission === 'owner'), [filteredFiles]);
+  const sharedFiles = useMemo(() => filteredFiles.filter(f => f.permission !== 'owner'), [filteredFiles]);
 
-  const handleCreateNew = () => {
+  const rootOwnFiles = useMemo(() => sortFiles(ownFiles.filter(f => !f.folderId)), [ownFiles, sortMode]);
+  const getFilesInFolder = (folderId: string) => sortFiles(ownFiles.filter(f => f.folderId === folderId));
+
+  const handleCreateNew = async () => {
+    if (!user) return;
     const name = newFileName.trim() || 'Sem título';
-    const file = createNewFile(name, [], newFileFolder);
-    saveFile(file);
-    setNewFileDialog(false);
-    setNewFileName('');
-    setNewFileFolder(undefined);
-    navigate(`/flow/${file.id}`);
+    try {
+      const file = await createNewFileAsync(name, [], user.id, newFileFolder);
+      setNewFileDialog(false);
+      setNewFileName('');
+      setNewFileFolder(undefined);
+      navigate(`/flow/${file.id}`);
+    } catch (e: any) {
+      toast.error('Erro ao criar arquivo: ' + e.message);
+    }
   };
 
   const handleCreateFolder = () => {
@@ -83,11 +101,15 @@ const Home = () => {
     toast.success('Pasta criada');
   };
 
-  const handleDeleteFile = (id: string, e: React.MouseEvent) => {
+  const handleDeleteFile = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    deleteFile(id);
-    reload();
-    toast.success('Arquivo excluído');
+    try {
+      await deleteFileAsync(id);
+      await reload();
+      toast.success('Arquivo excluído');
+    } catch (err: any) {
+      toast.error('Erro: ' + err.message);
+    }
   };
 
   const handleDeleteFolder = (id: string) => {
@@ -96,9 +118,9 @@ const Home = () => {
     toast.success('Pasta excluída (arquivos movidos para raiz)');
   };
 
-  const handleMoveFile = (fileId: string, folderId: string | undefined) => {
-    moveFileToFolder(fileId, folderId);
-    reload();
+  const handleMoveFile = async (fileId: string, folderId: string | undefined) => {
+    await moveFileToFolderAsync(fileId, folderId);
+    await reload();
     toast.success('Arquivo movido');
   };
 
@@ -108,47 +130,65 @@ const Home = () => {
     name: 'Nome (A-Z)',
   };
 
-  const FileItem = ({ file }: { file: SavedFile }) => (
-    <div
-      className="group flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors"
-      onClick={() => navigate(`/flow/${file.id}`)}
-    >
-      <FileText className="h-6 w-6 text-primary/60 shrink-0" />
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm truncate">{file.name}</p>
-        <p className="text-xs text-muted-foreground">
-          {file.tabs.length} aba{file.tabs.length !== 1 ? 's' : ''} · {format(new Date(file.updatedAt), "dd/MM/yyyy HH:mm", { locale: ptBR })}
-        </p>
+  const FileItem = ({ file }: { file: SavedFile }) => {
+    const isOwner = file.permission === 'owner';
+    return (
+      <div
+        className="group flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors"
+        onClick={() => navigate(`/flow/${file.id}`)}
+      >
+        <FileText className="h-6 w-6 text-primary/60 shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <p className="font-medium text-sm truncate">{file.name}</p>
+            {!isOwner && file.permission && (
+              <Badge variant="outline" className="text-[10px] gap-1 shrink-0">
+                {permissionIcons[file.permission]} {file.permission === 'leitor' ? 'Leitor' : file.permission === 'comentador' ? 'Comentador' : 'Editor'}
+              </Badge>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {file.tabs.length} aba{file.tabs.length !== 1 ? 's' : ''} · {format(new Date(file.updatedAt), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+          </p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild onClick={e => e.stopPropagation()}>
+            <button className="h-7 w-7 rounded hover:bg-accent flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+              <MoreVertical className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
+            {isOwner && (
+              <DropdownMenuItem onClick={() => setShareFile(file)}>
+                <Share2 className="h-3.5 w-3.5 mr-2" />
+                Compartilhar
+              </DropdownMenuItem>
+            )}
+            {isOwner && folders.length > 0 && (
+              <>
+                {file.folderId && (
+                  <DropdownMenuItem onClick={() => handleMoveFile(file.id, undefined)}>
+                    Mover para raiz
+                  </DropdownMenuItem>
+                )}
+                {folders.filter(f => f.id !== file.folderId).map(folder => (
+                  <DropdownMenuItem key={folder.id} onClick={() => handleMoveFile(file.id, folder.id)}>
+                    Mover para "{folder.name}"
+                  </DropdownMenuItem>
+                ))}
+              </>
+            )}
+            {isOwner && (
+              <DropdownMenuItem className="text-destructive" onClick={(e) => handleDeleteFile(file.id, e as unknown as React.MouseEvent)}>
+                <Trash2 className="h-3.5 w-3.5 mr-2" />
+                Excluir
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild onClick={e => e.stopPropagation()}>
-          <button className="h-7 w-7 rounded hover:bg-accent flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-            <MoreVertical className="h-4 w-4" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-          {folders.length > 0 && (
-            <>
-              {file.folderId && (
-                <DropdownMenuItem onClick={() => handleMoveFile(file.id, undefined)}>
-                  Mover para raiz
-                </DropdownMenuItem>
-              )}
-              {folders.filter(f => f.id !== file.folderId).map(folder => (
-                <DropdownMenuItem key={folder.id} onClick={() => handleMoveFile(file.id, folder.id)}>
-                  Mover para "{folder.name}"
-                </DropdownMenuItem>
-              ))}
-            </>
-          )}
-          <DropdownMenuItem className="text-destructive" onClick={(e) => handleDeleteFile(file.id, e as unknown as React.MouseEvent)}>
-            <Trash2 className="h-3.5 w-3.5 mr-2" />
-            Excluir
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -279,16 +319,37 @@ const Home = () => {
               );
             })}
 
-            {/* Root files */}
-            {rootFiles.length > 0 && (
+            {/* Own root files */}
+            {rootOwnFiles.length > 0 && (
               <div className="space-y-2">
-                {folders.length > 0 && <p className="text-xs text-muted-foreground mt-4 mb-1">Sem pasta</p>}
-                {rootFiles.map(file => <FileItem key={file.id} file={file} />)}
+                {folders.length > 0 && <p className="text-xs text-muted-foreground mt-4 mb-1">Meus arquivos</p>}
+                {rootOwnFiles.map(file => <FileItem key={file.id} file={file} />)}
+              </div>
+            )}
+
+            {/* Shared files */}
+            {sharedFiles.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground mt-6 mb-1 flex items-center gap-1.5">
+                  <Share2 className="h-3.5 w-3.5" /> Compartilhados comigo
+                </p>
+                {sortFiles(sharedFiles).map(file => <FileItem key={file.id} file={file} />)}
               </div>
             )}
           </div>
         )}
       </div>
+
+      {/* Share dialog */}
+      {shareFile && (
+        <ShareDialog
+          open={!!shareFile}
+          onOpenChange={open => { if (!open) setShareFile(null); }}
+          fileId={shareFile.id}
+          fileName={shareFile.name}
+          ownerId={shareFile.ownerId || ''}
+        />
+      )}
 
       {/* New file dialog */}
       <Dialog open={newFileDialog} onOpenChange={setNewFileDialog}>
