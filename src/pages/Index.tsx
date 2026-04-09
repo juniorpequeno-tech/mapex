@@ -328,6 +328,7 @@ const Index = () => {
                   row={row}
                   labels={data.labels}
                   columnCount={data.columns.length}
+                  columnWidths={columnWidths}
                   onUpdateCell={canEdit ? (cellId, updates) => updateCell(row.id, cellId, updates) : () => {}}
                   onSetCellType={canEdit ? (cellId, type) => setCellType(row.id, cellId, type) : () => {}}
                   onToggleLabel={canEdit ? labelId => toggleLabel(row.id, labelId) : () => {}}
