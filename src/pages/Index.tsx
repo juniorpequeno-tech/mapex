@@ -64,6 +64,20 @@ const Index = () => {
     loadFile();
   }, [fileId]);
 
+  // Ctrl+Z undo shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey && canEdit) {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+        e.preventDefault();
+        undo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, canEdit]);
+
   const handleSave = useCallback(async () => {
     if (!currentFile || !canEdit) return;
     try {
