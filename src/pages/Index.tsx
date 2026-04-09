@@ -293,7 +293,15 @@ const Index = () => {
         ) : (
           <div className="min-w-fit">
             {/* Column headers */}
-            <div className="flex border-b-2 border-border bg-muted/50 sticky top-0 z-10">
+            <div
+              className="flex border-b-2 sticky top-0 z-10"
+              style={{
+                backgroundColor: data.headerStyle?.bgColor || undefined,
+                borderColor: data.headerStyle?.borderColor || undefined,
+                fontSize: data.headerStyle?.fontSize ? `${data.headerStyle.fontSize}px` : undefined,
+                ...(!data.headerStyle?.bgColor ? { background: 'hsl(var(--muted) / 0.5)' } : {}),
+              }}
+            >
               <div className="flex">
                 {data.columns.map((col, i) => (
                   <React.Fragment key={i}>
