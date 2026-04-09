@@ -24,7 +24,7 @@ const Index = () => {
     tabs, activeTabId, activeTab, data,
     setActiveTabId, addTab, removeTab, renameTab, setTabColor,
     protectTab, unlockTab, removeProtection,
-    updateColumnTitle, addColumn, addRow, deleteRow,
+    updateColumnTitle, addColumn, deleteColumn, addRow, deleteRow,
     updateCell, setCellType, toggleLabel, addLabel, editLabel, deleteLabel,
     addObservation, addMessage, setRowColor, setRowBorder, setRowFontSize,
     updateHeaderStyle, updateColumnHeaderStyle, loadTabs, undo, redo, canUndo, canRedo, setColumnWidth,
