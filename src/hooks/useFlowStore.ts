@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { FlowTab, FlowData, FlowRow, CellData, CellType, Label, Message } from '@/types/flow';
+import { FlowTab, FlowData, FlowRow, CellData, CellType, Label, Message, HeaderStyle } from '@/types/flow';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
