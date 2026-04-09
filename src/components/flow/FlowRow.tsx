@@ -14,6 +14,7 @@ interface FlowRowProps {
   row: FlowRowType;
   labels: Label[];
   columnCount: number;
+  columnWidths?: number[];
   onUpdateCell: (cellId: string, updates: Partial<CellData>) => void;
   onSetCellType: (cellId: string, type: CellType) => void;
   onToggleLabel: (labelId: string) => void;
