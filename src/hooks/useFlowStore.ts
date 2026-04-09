@@ -302,8 +302,8 @@ export function useFlowStore() {
     }));
   }, [updateTabData]);
 
-  const addObservation = useCallback((rowId: string, text: string) => {
-    const entry = { id: generateId(), text, createdAt: new Date().toISOString() };
+  const addObservation = useCallback((rowId: string, text: string, authorName?: string, authorId?: string) => {
+    const entry = { id: generateId(), text, createdAt: new Date().toISOString(), authorName, authorId };
     updateTabData(prev => ({
       ...prev,
       rows: prev.rows.map(row =>

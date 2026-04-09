@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 const Index = () => {
   const { fileId } = useParams<{ fileId: string }>();
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, profile } = useAuth();
 
   const {
     tabs, activeTabId, activeTab, data,
@@ -422,7 +422,7 @@ const Index = () => {
                   onAddLabel={canEdit ? addLabel : () => {}}
                   onEditLabel={canEdit ? (id, updates) => editLabel(id, updates) : () => {}}
                   onDeleteLabel={canEdit ? (id) => deleteLabel(id) : () => {}}
-                  onAddObservation={canComment ? text => addObservation(row.id, text) : () => {}}
+                  onAddObservation={canComment ? text => addObservation(row.id, text, profile?.full_name || user?.email || 'Anônimo', user?.id) : () => {}}
                   onAddMessage={canComment ? (to, text) => addMessage(row.id, to, text) : () => {}}
                   onDelete={canEdit ? () => deleteRow(row.id) : () => {}}
                   onSetRowColor={canEdit ? (color) => setRowColor(row.id, color) : () => {}}

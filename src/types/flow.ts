@@ -27,6 +27,8 @@ export interface ObservationEntry {
   id: string;
   text: string;
   createdAt: string;
+  authorName?: string;
+  authorId?: string;
 }
 
 export interface Observation {
