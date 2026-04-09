@@ -386,6 +386,7 @@ const Index = () => {
                     }
                   }}
                   onEnter={canEdit ? handleEnterNewRow : () => {}}
+                  onSelectCell={(rowId, cellId) => { setSelectedRowId(rowId); setSelectedCellId(cellId); }}
                 />
               ))}
             </div>
