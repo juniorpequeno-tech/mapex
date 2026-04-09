@@ -253,44 +253,28 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Format toolbar */}
-      {canEdit && (() => {
-        const selectedRow = selectedRowId ? data.rows.find(r => r.id === selectedRowId) : null;
-        const selectedCell = selectedRow && selectedCellId ? selectedRow.cells.find(c => c.id === selectedCellId) : null;
-        return (
-          <FormatToolbar
-            disabled={false}
-            currentCellColor={selectedCell?.bgColor}
-            currentRowColor={selectedRow?.bgColor}
-            currentBorder={selectedCell?.borderColor || selectedRow?.borderColor}
-            currentFontSize={selectedCell?.fontSize || selectedRow?.fontSize || 14}
-            onPaintCell={(color) => {
-              if (selectedRowId && selectedCellId) {
-                updateCell(selectedRowId, selectedCellId, { bgColor: color });
-              }
-            }}
-            onPaintRow={(color) => {
-              if (selectedRowId) {
-                setRowColor(selectedRowId, color);
-              }
-            }}
-            onSetBorder={(color) => {
-              if (selectedRowId && selectedCellId) {
-                updateCell(selectedRowId, selectedCellId, { borderColor: color });
-              } else if (selectedRowId) {
-                setRowBorder(selectedRowId, color);
-              }
-            }}
-            onSetFontSize={(size) => {
-              if (selectedRowId && selectedCellId) {
-                updateCell(selectedRowId, selectedCellId, { fontSize: size });
-              } else if (selectedRowId) {
-                setRowFontSize(selectedRowId, size);
-              }
-            }}
-          />
-        );
-      })()}
+      {/* Format toolbar — applies to column header row */}
+      {canEdit && (
+        <FormatToolbar
+          disabled={false}
+          currentCellColor={undefined}
+          currentRowColor={data.headerStyle?.bgColor}
+          currentBorder={data.headerStyle?.borderColor}
+          currentFontSize={data.headerStyle?.fontSize || 12}
+          onPaintCell={(color) => {
+            // Not applicable for header row
+          }}
+          onPaintRow={(color) => {
+            updateHeaderStyle({ bgColor: color });
+          }}
+          onSetBorder={(color) => {
+            updateHeaderStyle({ borderColor: color });
+          }}
+          onSetFontSize={(size) => {
+            updateHeaderStyle({ fontSize: size });
+          }}
+        />
+      )}
 
       {/* Read-only banner */}
       {!canEdit && (
