@@ -253,6 +253,51 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Format toolbar */}
+      {canEdit && (() => {
+        const selectedRow = selectedRowId ? data.rows.find(r => r.id === selectedRowId) : null;
+        const selectedCell = selectedRow && selectedCellId ? selectedRow.cells.find(c => c.id === selectedCellId) : null;
+        return (
+          <FormatToolbar
+            disabled={false}
+            currentCellColor={selectedCell?.bgColor}
+            currentRowColor={selectedRow?.bgColor}
+            currentBorder={selectedCell?.borderColor || selectedRow?.borderColor}
+            currentFontSize={selectedCell?.fontSize || selectedRow?.fontSize || 14}
+            onPaintCell={(color) => {
+              if (selectedRowId && selectedCellId) {
+                updateCell(selectedRowId, selectedCellId, { bgColor: color });
+              }
+            }}
+            onPaintRow={(color) => {
+              if (selectedRowId) {
+                setRowColor(selectedRowId, color);
+              }
+            }}
+            onSetBorder={(color) => {
+              if (selectedRowId && selectedCellId) {
+                updateCell(selectedRowId, selectedCellId, { borderColor: color });
+              } else if (selectedRowId) {
+                updateTabData(prev => ({
+                  ...prev,
+                  rows: prev.rows.map(r => r.id === selectedRowId ? { ...r, borderColor: color } : r),
+                }));
+              }
+            }}
+            onSetFontSize={(size) => {
+              if (selectedRowId && selectedCellId) {
+                updateCell(selectedRowId, selectedCellId, { fontSize: size });
+              } else if (selectedRowId) {
+                updateTabData(prev => ({
+                  ...prev,
+                  rows: prev.rows.map(r => r.id === selectedRowId ? { ...r, fontSize: size } : r),
+                }));
+              }
+            }}
+          />
+        );
+      })()}
+
       {/* Read-only banner */}
       {!canEdit && (
         <div className="bg-muted/50 border-b border-border px-4 py-2 text-xs text-muted-foreground flex items-center gap-2">
