@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut, Plus, Search, Edit, Trash2, KeyRound, UserCheck, UserX, Users } from "lucide-react";
+import { LogOut, Plus, Search, Edit, Trash2, KeyRound, UserCheck, UserX, Users, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import CreateUserDialog from "@/components/admin/CreateUserDialog";
 import EditUserDialog from "@/components/admin/EditUserDialog";
 import ResetPasswordDialog from "@/components/admin/ResetPasswordDialog";
@@ -45,6 +46,7 @@ const roleLabels: Record<AppRole, string> = {
 
 const AdminPanel = () => {
   const { profile, signOut, isMasterAdmin } = useAuth();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [search, setSearch] = useState("");
@@ -135,6 +137,9 @@ const AdminPanel = () => {
     <div className="min-h-screen bg-muted/30">
       <header className="bg-card border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title="Voltar">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <Users className="h-6 w-6 text-primary" />
           <div>
             <h1 className="text-lg font-bold">Painel de Administração</h1>
