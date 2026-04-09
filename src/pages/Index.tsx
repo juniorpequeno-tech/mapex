@@ -475,6 +475,32 @@ const Index = () => {
           ownerId={currentFile.ownerId || ''}
         />
       )}
+
+      {/* Column context menu */}
+      {contextMenu && (
+        <div
+          className="fixed inset-0 z-50"
+          onClick={() => setContextMenu(null)}
+          onContextMenu={e => { e.preventDefault(); setContextMenu(null); }}
+        >
+          <div
+            className="absolute bg-popover border border-border rounded-md shadow-md py-1 min-w-[160px]"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-accent transition-colors text-destructive"
+              onClick={() => {
+                deleteColumn(contextMenu.colIndex);
+                setContextMenu(null);
+              }}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Excluir coluna
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
