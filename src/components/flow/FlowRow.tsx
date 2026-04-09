@@ -55,7 +55,11 @@ export function FlowRowComponent({
   };
 
   return (
-    <div data-flow-row className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors" style={row.bgColor ? { backgroundColor: row.bgColor + '22' } : undefined}>
+    <div data-flow-row className="group relative flex items-stretch border-b border-border hover:bg-accent/30 transition-colors" style={{
+      ...(row.bgColor ? { backgroundColor: row.bgColor + '22' } : {}),
+      ...(row.borderColor ? { borderColor: row.borderColor, borderWidth: '2px' } : {}),
+      ...(row.fontSize ? { fontSize: `${row.fontSize}px` } : {}),
+    }}>
       {/* Cells */}
       <div className="flex items-center">
         {row.cells.map((cell, i) => (
