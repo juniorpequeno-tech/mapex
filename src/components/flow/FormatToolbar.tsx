@@ -16,9 +16,9 @@ const BORDER_COLORS = [
 ];
 
 interface FormatToolbarProps {
-  onPaintCell: (color: string | undefined) => void;
+  onPaintCell?: (color: string | undefined) => void;
   onPaintRow: (color: string | undefined) => void;
-  onSetBorder: (color: string | undefined) => void;
+  onSetBorder?: (color: string | undefined) => void;
   onSetFontSize: (size: number) => void;
   onSetFontColor: (color: string | undefined) => void;
   currentCellColor?: string;
@@ -51,8 +51,8 @@ function ColorPicker({ colors, onSelect, current }: { colors: string[]; onSelect
 }
 
 export function FormatToolbar({
-  onPaintCell, onPaintRow, onSetBorder, onSetFontSize, onSetFontColor,
-  currentCellColor, currentRowColor, currentBorder, currentFontSize = 14, currentFontColor,
+  onPaintRow, onSetFontSize, onSetFontColor,
+  currentRowColor, currentFontSize = 14, currentFontColor,
   disabled,
 }: FormatToolbarProps) {
   if (disabled) return null;
@@ -60,26 +60,6 @@ export function FormatToolbar({
   return (
     <div className="border-b border-border px-2 sm:px-4 py-1.5 flex items-center gap-1 bg-muted/30 shrink-0 overflow-x-auto">
       <span className="text-[10px] text-muted-foreground mr-2 font-medium">Formatar:</span>
-
-      {/* Paint Cell */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            className="h-7 px-2 rounded hover:bg-accent flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            title="Pintar célula"
-          >
-            <PaintBucket className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Célula</span>
-            {currentCellColor && (
-              <span className="h-3 w-3 rounded-sm border border-border" style={{ backgroundColor: currentCellColor }} />
-            )}
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <p className="text-xs font-medium text-muted-foreground px-2 pt-2">Cor da célula</p>
-          <ColorPicker colors={COLORS} onSelect={onPaintCell} current={currentCellColor} />
-        </PopoverContent>
-      </Popover>
 
       {/* Paint Row */}
       <Popover>
@@ -98,26 +78,6 @@ export function FormatToolbar({
         <PopoverContent className="w-auto p-0" align="start">
           <p className="text-xs font-medium text-muted-foreground px-2 pt-2">Cor da linha</p>
           <ColorPicker colors={COLORS} onSelect={onPaintRow} current={currentRowColor} />
-        </PopoverContent>
-      </Popover>
-
-      {/* Border */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            className="h-7 px-2 rounded hover:bg-accent flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            title="Bordas"
-          >
-            <Grid3X3 className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Borda</span>
-            {currentBorder && (
-              <span className="h-3 w-3 rounded-sm border-2" style={{ borderColor: currentBorder }} />
-            )}
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <p className="text-xs font-medium text-muted-foreground px-2 pt-2">Cor da borda</p>
-          <ColorPicker colors={BORDER_COLORS} onSelect={onSetBorder} current={currentBorder} />
         </PopoverContent>
       </Popover>
 
