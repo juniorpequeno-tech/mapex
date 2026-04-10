@@ -116,17 +116,19 @@ const Index = () => {
         if (targetCell) {
           const cellUpdates: Partial<CellData> = { 
             value: sourceCell.value, 
-            type: sourceCell.type 
+            type: sourceCell.type,
+            ...(sourceCell.dropdownOptions && { dropdownOptions: sourceCell.dropdownOptions }),
+            ...(sourceCell.fileName && { fileName: sourceCell.fileName }),
+            ...(sourceCell.bgColor && { bgColor: sourceCell.bgColor }),
+            ...(sourceCell.fontSize && { fontSize: sourceCell.fontSize }),
+            ...(sourceCell.borderColor && { borderColor: sourceCell.borderColor }),
           };
-          if (sourceCell.dropdownOptions) {
-            cellUpdates.dropdownOptions = sourceCell.dropdownOptions;
-          }
           updateCell(targetRow.id, targetCell.id, cellUpdates);
           setCellType(targetRow.id, targetCell.id, sourceCell.type);
         }
       }
     }
-  }, [activeCell, canEdit, data.rows, updateCell]);
+  }, [activeCell, canEdit, data.rows, updateCell, setCellType]);
 
   // Load file from Supabase
   useEffect(() => {
