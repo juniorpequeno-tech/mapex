@@ -58,7 +58,7 @@ export function FormatToolbar({
   if (disabled) return null;
 
   return (
-    <div className="border-b border-border px-4 py-1.5 flex items-center gap-1 bg-muted/30 shrink-0">
+    <div className="border-b border-border px-2 sm:px-4 py-1.5 flex items-center gap-1 bg-muted/30 shrink-0 overflow-x-auto">
       <span className="text-[10px] text-muted-foreground mr-2 font-medium">Formatar:</span>
 
       {/* Paint Cell */}
