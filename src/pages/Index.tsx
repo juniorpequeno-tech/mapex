@@ -128,7 +128,7 @@ const Index = () => {
         }
       }
     }
-  }, [activeCell, canEdit, data.rows, updateCell]);
+  }, [activeCell, canEdit, data.rows, updateCell, setCellType]);
 
   // Load file from Supabase
   useEffect(() => {
