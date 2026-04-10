@@ -206,108 +206,110 @@ const AdminPanel = () => {
             ) : filteredUsers.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">Nenhum usuário encontrado.</p>
             ) : (
-              {/* Desktop table */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b text-left">
-                      <th className="pb-3 font-medium">Nome</th>
-                      <th className="pb-3 font-medium">E-mail</th>
-                      <th className="pb-3 font-medium">Perfil</th>
-                      <th className="pb-3 font-medium">Status</th>
-                      <th className="pb-3 font-medium">Criado em</th>
-                      <th className="pb-3 font-medium text-right">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map((user) => (
-                      <tr key={user.id} className="border-b last:border-0">
-                        <td className="py-3">
-                          <div>
-                            <p className="font-medium">{user.full_name || "—"}</p>
-                            {user.username && (
-                              <p className="text-xs text-muted-foreground">@{user.username}</p>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-3">{user.email}</td>
-                        <td className="py-3">
-                          <Badge variant={user.role === "administrador_master" ? "default" : "secondary"}>
-                            {roleLabels[user.role]}
-                          </Badge>
-                        </td>
-                        <td className="py-3">
-                          <Badge variant={user.status === "ativo" ? "default" : "destructive"}>
-                            {user.status === "ativo" ? "Ativo" : "Inativo"}
-                          </Badge>
-                        </td>
-                        <td className="py-3 text-muted-foreground">
-                          {new Date(user.created_at).toLocaleDateString("pt-BR")}
-                        </td>
-                        <td className="py-3">
-                          <div className="flex gap-1 justify-end">
-                            <Button variant="ghost" size="icon" title="Editar" onClick={() => setEditingUser(user)}>
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" title="Redefinir senha" onClick={() => setResetPasswordUser(user)}>
-                              <KeyRound className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" title={user.status === "ativo" ? "Desativar" : "Ativar"} onClick={() => toggleStatus(user)}>
-                              {user.status === "ativo" ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
-                            </Button>
-                            {isMasterAdmin && user.role !== "administrador_master" && (
-                              <Button variant="ghost" size="icon" title="Excluir" onClick={() => setDeletingUser(user)}>
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            )}
-                          </div>
-                        </td>
+              <>
+                {/* Desktop table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b text-left">
+                        <th className="pb-3 font-medium">Nome</th>
+                        <th className="pb-3 font-medium">E-mail</th>
+                        <th className="pb-3 font-medium">Perfil</th>
+                        <th className="pb-3 font-medium">Status</th>
+                        <th className="pb-3 font-medium">Criado em</th>
+                        <th className="pb-3 font-medium text-right">Ações</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {/* Mobile card layout */}
-              <div className="md:hidden space-y-3">
-                {filteredUsers.map((user) => (
-                  <div key={user.id} className="border border-border rounded-lg p-3 space-y-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm truncate">{user.full_name || "—"}</p>
-                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    </thead>
+                    <tbody>
+                      {filteredUsers.map((user) => (
+                        <tr key={user.id} className="border-b last:border-0">
+                          <td className="py-3">
+                            <div>
+                              <p className="font-medium">{user.full_name || "—"}</p>
+                              {user.username && (
+                                <p className="text-xs text-muted-foreground">@{user.username}</p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3">{user.email}</td>
+                          <td className="py-3">
+                            <Badge variant={user.role === "administrador_master" ? "default" : "secondary"}>
+                              {roleLabels[user.role]}
+                            </Badge>
+                          </td>
+                          <td className="py-3">
+                            <Badge variant={user.status === "ativo" ? "default" : "destructive"}>
+                              {user.status === "ativo" ? "Ativo" : "Inativo"}
+                            </Badge>
+                          </td>
+                          <td className="py-3 text-muted-foreground">
+                            {new Date(user.created_at).toLocaleDateString("pt-BR")}
+                          </td>
+                          <td className="py-3">
+                            <div className="flex gap-1 justify-end">
+                              <Button variant="ghost" size="icon" title="Editar" onClick={() => setEditingUser(user)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" title="Redefinir senha" onClick={() => setResetPasswordUser(user)}>
+                                <KeyRound className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" title={user.status === "ativo" ? "Desativar" : "Ativar"} onClick={() => toggleStatus(user)}>
+                                {user.status === "ativo" ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+                              </Button>
+                              {isMasterAdmin && user.role !== "administrador_master" && (
+                                <Button variant="ghost" size="icon" title="Excluir" onClick={() => setDeletingUser(user)}>
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Mobile card layout */}
+                <div className="md:hidden space-y-3">
+                  {filteredUsers.map((user) => (
+                    <div key={user.id} className="border border-border rounded-lg p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm truncate">{user.full_name || "—"}</p>
+                          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                        </div>
+                        <Badge variant={user.status === "ativo" ? "default" : "destructive"} className="shrink-0 text-[10px]">
+                          {user.status === "ativo" ? "Ativo" : "Inativo"}
+                        </Badge>
                       </div>
-                      <Badge variant={user.status === "ativo" ? "default" : "destructive"} className="shrink-0 text-[10px]">
-                        {user.status === "ativo" ? "Ativo" : "Inativo"}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={user.role === "administrador_master" ? "default" : "secondary"} className="text-[10px]">
-                        {roleLabels[user.role]}
-                      </Badge>
-                      <span className="text-[10px] text-muted-foreground">
-                        {new Date(user.created_at).toLocaleDateString("pt-BR")}
-                      </span>
-                    </div>
-                    <div className="flex gap-1 pt-1 border-t border-border">
-                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => setEditingUser(user)}>
-                        <Edit className="h-3 w-3" /> Editar
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => setResetPasswordUser(user)}>
-                        <KeyRound className="h-3 w-3" /> Senha
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => toggleStatus(user)}>
-                        {user.status === "ativo" ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
-                        {user.status === "ativo" ? "Desativar" : "Ativar"}
-                      </Button>
-                      {isMasterAdmin && user.role !== "administrador_master" && (
-                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-destructive" onClick={() => setDeletingUser(user)}>
-                          <Trash2 className="h-3 w-3" /> Excluir
+                      <div className="flex items-center gap-2">
+                        <Badge variant={user.role === "administrador_master" ? "default" : "secondary"} className="text-[10px]">
+                          {roleLabels[user.role]}
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(user.created_at).toLocaleDateString("pt-BR")}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1 pt-1 border-t border-border">
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => setEditingUser(user)}>
+                          <Edit className="h-3 w-3" /> Editar
                         </Button>
-                      )}
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => setResetPasswordUser(user)}>
+                          <KeyRound className="h-3 w-3" /> Senha
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => toggleStatus(user)}>
+                          {user.status === "ativo" ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+                          {user.status === "ativo" ? "Desativar" : "Ativar"}
+                        </Button>
+                        {isMasterAdmin && user.role !== "administrador_master" && (
+                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-destructive" onClick={() => setDeletingUser(user)}>
+                            <Trash2 className="h-3 w-3" /> Excluir
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
