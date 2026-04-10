@@ -135,25 +135,25 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <header className="bg-card border-b px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title="Voltar">
+      <header className="bg-card border-b px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title="Voltar" className="shrink-0">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Users className="h-6 w-6 text-primary" />
-          <div>
-            <h1 className="text-lg font-bold">Painel de Administração</h1>
-            <p className="text-sm text-muted-foreground">
-              Olá, {profile?.full_name || profile?.email} ({roleLabels[profile?.role || "usuario_padrao"]})
+          <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0" />
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-lg font-bold truncate">Painel de Administração</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground truncate">
+              Olá, {profile?.full_name || profile?.email}
             </p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={signOut}>
-          <LogOut className="h-4 w-4 mr-2" /> Sair
+        <Button variant="outline" size="sm" onClick={signOut} className="shrink-0 h-8 px-2 sm:px-3">
+          <LogOut className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Sair</span>
         </Button>
       </header>
 
-      <main className="max-w-6xl mx-auto p-6 space-y-6">
+      <main className="max-w-6xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full">
             <div className="relative flex-1">
@@ -206,7 +206,8 @@ const AdminPanel = () => {
             ) : filteredUsers.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">Nenhum usuário encontrado.</p>
             ) : (
-              <div className="overflow-x-auto">
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b text-left">
@@ -245,41 +246,17 @@ const AdminPanel = () => {
                         </td>
                         <td className="py-3">
                           <div className="flex gap-1 justify-end">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              title="Editar"
-                              onClick={() => setEditingUser(user)}
-                            >
+                            <Button variant="ghost" size="icon" title="Editar" onClick={() => setEditingUser(user)}>
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              title="Redefinir senha"
-                              onClick={() => setResetPasswordUser(user)}
-                            >
+                            <Button variant="ghost" size="icon" title="Redefinir senha" onClick={() => setResetPasswordUser(user)}>
                               <KeyRound className="h-4 w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              title={user.status === "ativo" ? "Desativar" : "Ativar"}
-                              onClick={() => toggleStatus(user)}
-                            >
-                              {user.status === "ativo" ? (
-                                <UserX className="h-4 w-4" />
-                              ) : (
-                                <UserCheck className="h-4 w-4" />
-                              )}
+                            <Button variant="ghost" size="icon" title={user.status === "ativo" ? "Desativar" : "Ativar"} onClick={() => toggleStatus(user)}>
+                              {user.status === "ativo" ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
                             </Button>
                             {isMasterAdmin && user.role !== "administrador_master" && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                title="Excluir"
-                                onClick={() => setDeletingUser(user)}
-                              >
+                              <Button variant="ghost" size="icon" title="Excluir" onClick={() => setDeletingUser(user)}>
                                 <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
                             )}
@@ -289,6 +266,47 @@ const AdminPanel = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              {/* Mobile card layout */}
+              <div className="md:hidden space-y-3">
+                {filteredUsers.map((user) => (
+                  <div key={user.id} className="border border-border rounded-lg p-3 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">{user.full_name || "—"}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                      <Badge variant={user.status === "ativo" ? "default" : "destructive"} className="shrink-0 text-[10px]">
+                        {user.status === "ativo" ? "Ativo" : "Inativo"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={user.role === "administrador_master" ? "default" : "secondary"} className="text-[10px]">
+                        {roleLabels[user.role]}
+                      </Badge>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(user.created_at).toLocaleDateString("pt-BR")}
+                      </span>
+                    </div>
+                    <div className="flex gap-1 pt-1 border-t border-border">
+                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => setEditingUser(user)}>
+                        <Edit className="h-3 w-3" /> Editar
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => setResetPasswordUser(user)}>
+                        <KeyRound className="h-3 w-3" /> Senha
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => toggleStatus(user)}>
+                        {user.status === "ativo" ? <UserX className="h-3 w-3" /> : <UserCheck className="h-3 w-3" />}
+                        {user.status === "ativo" ? "Desativar" : "Ativar"}
+                      </Button>
+                      {isMasterAdmin && user.role !== "administrador_master" && (
+                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 text-destructive" onClick={() => setDeletingUser(user)}>
+                          <Trash2 className="h-3 w-3" /> Excluir
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>

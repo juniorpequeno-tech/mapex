@@ -193,42 +193,44 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <GitBranch className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-bold">Mapex</h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground border-r border-border pr-3">
-            <User className="h-4 w-4" />
-            <div className="flex flex-col">
-              <span className="font-medium text-foreground text-xs">{profile?.full_name || user?.email}</span>
-              <span className="text-[10px]">{profile?.role === 'administrador_master' ? 'Admin Master' : profile?.role === 'administrador_secundario' ? 'Admin' : 'Usuário'}</span>
-            </div>
+      <div className="border-b border-border px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <GitBranch className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <h1 className="text-lg sm:text-xl font-bold">Mapex</h1>
           </div>
-          {isAdmin && (
-            <Button size="sm" variant="outline" onClick={() => navigate('/admin')} className="gap-1.5">
-              <Shield className="h-4 w-4" />
-              Painel Admin
+          <div className="flex items-center gap-1.5 sm:gap-3">
+            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground border-r border-border pr-3">
+              <User className="h-4 w-4" />
+              <div className="flex flex-col">
+                <span className="font-medium text-foreground text-xs">{profile?.full_name || user?.email}</span>
+                <span className="text-[10px]">{profile?.role === 'administrador_master' ? 'Admin Master' : profile?.role === 'administrador_secundario' ? 'Admin' : 'Usuário'}</span>
+              </div>
+            </div>
+            {isAdmin && (
+              <Button size="sm" variant="outline" onClick={() => navigate('/admin')} className="gap-1 sm:gap-1.5 h-8 px-2 sm:px-3">
+                <Shield className="h-4 w-4" />
+                <span className="hidden sm:inline">Painel Admin</span>
+              </Button>
+            )}
+            <Button size="sm" variant="outline" onClick={() => setNewFolderDialog(true)} className="gap-1 sm:gap-1.5 h-8 px-2 sm:px-3">
+              <FolderPlus className="h-4 w-4" />
+              <span className="hidden sm:inline">Nova pasta</span>
             </Button>
-          )}
-          <Button size="sm" variant="outline" onClick={() => setNewFolderDialog(true)} className="gap-1.5">
-            <FolderPlus className="h-4 w-4" />
-            Nova pasta
-          </Button>
-          <Button size="sm" onClick={() => { setNewFileFolder(undefined); setNewFileDialog(true); }} className="gap-1.5">
-            <Plus className="h-4 w-4" />
-            Novo arquivo
-          </Button>
-          <Button size="sm" variant="ghost" onClick={signOut} className="gap-1.5 text-muted-foreground hover:text-destructive">
-            <LogOut className="h-4 w-4" />
-            Sair
-          </Button>
+            <Button size="sm" onClick={() => { setNewFileFolder(undefined); setNewFileDialog(true); }} className="gap-1 sm:gap-1.5 h-8 px-2 sm:px-3">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Novo arquivo</span>
+            </Button>
+            <Button size="sm" variant="ghost" onClick={signOut} className="gap-1 h-8 px-2 text-muted-foreground hover:text-destructive">
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Sair</span>
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-6 py-6">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* Search & Sort bar */}
         <div className="flex items-center gap-3 mb-5">
           <div className="relative flex-1">
